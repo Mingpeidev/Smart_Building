@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="stylesheet" href="../assets/css/layui.css">
+<link rel="stylesheet" href="../assets/css/view.css" />
+<title></title>
+<script type="text/javascript" src="../js/jquery.js"></script>
+<script type="text/javascript" src="../js/highcharts.js"></script>
+
+<script type="text/javascript">
+
+	Highcharts.setOptions({
+		global : {
+			useUTC : false
+		}
+	}); //修改时区
+	var temp = [];
+	var humi = [];
+	var temptime = [];
+	$.ajaxSetup({
+		async : false
+	});
+	$.getJSON('/Smart_Building/user/getSensorList', function(list) {
+		var i,
+			len = list.length;
+		for (i = 0; i < len; i++) {
+			if (list[i].sensorname == "temp") {
+				temp.push(Number(list[i].data));
+				temptime.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+			}
+			if (list[i].sensorname == "humi") {
+				humi.push(Number(list[i].data));
+			}
+		}
+	});
+</script>
+
+<script type="text/javascript">
+
+	$(function() {
+		console.log("哈哈哈")
+		var chart = new Highcharts.Chart({
+			chart : {
+				renderTo : 'container',
+				type : 'line'
+			},
+			title : {
+				text : '温湿度折线图'
+			},
+			subtitle : {
+				text : '数据来源: mao'
+			},
+			xAxis : {
+				categories : temptime
+			},
+			yAxis : {
+				title : {
+					text : '温度 (°C)/湿度(%RH)'
+				}
+			},
+			tooltip : {
+				formatter : function() {
+					return '<b>' + this.series.name + '</b><br/>' +
+						'<b>' + this.x + '</b><br/>' +
+						Highcharts.numberFormat(this.y, 1);
+				}
+			},
+			plotOptions : {
+				line : {
+					dataLabels : {
+						enabled : true // 开启数据标签
+					},
+					enableMouseTracking : true // 关闭鼠标跟踪，对应的提示框、点击事件会失效
+				}
+			},
+			series : [ {
+				name : '温度(°C)',
+				data : temp
+			}, {
+				name : '湿度(%RH)',
+				data : humi
+			} ]
+		});
+	});
+</script>
+
+</head>
+<body class="layui-view-body">
+	<div class="layui-content">
+		<div class="layui-row layui-col-space20">
+			<div class="layui-col-sm6 layui-col-md2">
+				<div class="layui-card">
+					<div class="layui-card-body chart-card">
+						<div class="chart-header">
+							<div class="metawrap">
+								<div class="meta">
+									<span>温度</span>
+								</div>
+								<div class="total">30℃</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-sm6 layui-col-md2">
+				<div class="layui-card">
+					<div class="layui-card-body chart-card">
+						<div class="chart-header">
+							<div class="metawrap">
+								<div class="meta">
+									<span>湿度</span>
+								</div>
+								<div class="total">50%</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-sm6 layui-col-md2">
+				<div class="layui-card">
+					<div class="layui-card-body chart-card">
+						<div class="chart-header">
+							<div class="metawrap">
+								<div class="meta">
+									<span>光照度</span>
+								</div>
+								<div class="total">55</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-sm6 layui-col-md2">
+				<div class="layui-card">
+					<div class="layui-card-body chart-card">
+						<div class="chart-header">
+							<div class="metawrap">
+								<div class="meta">
+									<span>灯</span>
+								</div>
+								<div class="total">打开</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-sm12 layui-col-md12">
+				<div class="layui-card">
+					<div class="layui-tab layui-tab-brief">
+						<ul class="layui-tab-title">
+							<li class="layui-this">实时数据</li>
+							<li>实时曲线</li>
+						</ul>
+						<div class="layui-tab-content">
+							<div class="layui-tab-item layui-show">
+								<button class="layui-btn layui-btn-radius layui-btn-normal">开灯</button>
+								<button class="layui-btn layui-btn-radius layui-btn-normal">开灯</button>
+								<button class="layui-btn layui-btn-radius layui-btn-normal">开灯</button>
+								<button class="layui-btn layui-btn-radius layui-btn-normal">开灯</button>
+								<a href="" class="layui-btn">一个可跳转的按钮</a>
+								<table id="sensortable"></table>
+							</div>
+							<div class="layui-tab-item">
+
+								<div id="container"
+									style="width:1000px;height:400px;margin:0 auto;"></div>
+								<div style="text-align:center;clear:both;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../assets/layui.all.js"></script>
+	<script>
+		var element = layui.element;
+		var table = layui.table;
+		var util = layui.util;
+	
+		//展示已知数据
+		table.render({
+			elem : '#sensortable',
+			url : '/Smart_Building/user/getSensorMap',
+			cols : [ [ //标题栏
+				{
+					field : 'id',
+					title : 'ID',
+					sort : true
+				}
+				, {
+					field : 'sensorname',
+					title : '传感器名',
+				}
+				, {
+					field : 'data',
+					title : '数据',
+				}
+				, {
+					field : 'time',
+					title : '时间',
+					templet : function(d) {
+						return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+					}
+				}
+			] ],
+			skin : 'line', //表格风格
+			even : true,
+			page : true, //是否显示分页
+			limits : [ 5, 7, 10 ],
+			limit : 5 //每页默认显示的数量
+		});
+	</script>
+</body>
+</html>

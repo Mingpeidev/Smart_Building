@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mao.dao.SensorMapper">
+  <resultMap id="BaseResultMap" type="cn.mao.pojo.Sensor">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sensorname" jdbcType="VARCHAR" property="sensorname" />
+    <result column="data" jdbcType="VARCHAR" property="data" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sensorname, data, time
+  </sql>
+  
+  
+  <select id="selectSensorAll" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select * from sensor where id!=""
+  </select>
+  
+   <select id="selectSensorByPage" resultMap="BaseResultMap" >
+    select * from sensor order by id desc limit #{page},#{limit}
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sensor
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sensor
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="cn.mao.pojo.Sensor">
+    insert into sensor (id, sensorname, data, 
+      time)
+    values (#{id,jdbcType=INTEGER}, #{sensorname,jdbcType=VARCHAR}, #{data,jdbcType=VARCHAR}, 
+      #{time,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.mao.pojo.Sensor">
+    insert into sensor
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sensorname != null">
+        sensorname,
+      </if>
+      <if test="data != null">
+        data,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sensorname != null">
+        #{sensorname,jdbcType=VARCHAR},
+      </if>
+      <if test="data != null">
+        #{data,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.mao.pojo.Sensor">
+    update sensor
+    <set>
+      <if test="sensorname != null">
+        sensorname = #{sensorname,jdbcType=VARCHAR},
+      </if>
+      <if test="data != null">
+        data = #{data,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.mao.pojo.Sensor">
+    update sensor
+    set sensorname = #{sensorname,jdbcType=VARCHAR},
+      data = #{data,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

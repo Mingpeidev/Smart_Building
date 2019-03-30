@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width" />
+<title>登陆失败！</title>
+</head>
+<body>
+	<div>
+		<p style="text-align:center;margin-top:200px;font-size:larger;">
+			<img src="../images/logo.jpg" height="30" width="30" /> Sorry！操作失败！<span
+				id="jumpBack">5</span>秒后返回。
+			<button type="button" class="btn btn-primary" onclick="back()">点击直接返回</button>
+		</p>
+
+	</div>
+</body>
+<script type="text/javascript">
+	countDown(5);
+	function back() {
+		window.location.href = "login"
+	}
+	function countDown(secs) {
+		var jumpBack = document.getElementById('jumpBack');
+		jumpBack.innerHTML = secs;
+		if (secs-- > 0) {
+			setTimeout("countDown(" + secs + ")", 1000);
+		} else {
+			window.location.href = "login"
+		}
+	}
+</script>
+
+</html>
