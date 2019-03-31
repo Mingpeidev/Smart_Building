@@ -1,5 +1,11 @@
 package cn.mao.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import cn.mao.pojo.User;
 import cn.mao.service.UserService;
 import cn.mao.util.Rxtx_sensor;
@@ -16,12 +21,11 @@ import cn.mao.util.SsmResult;
 @Controller
 @RequestMapping("/user")
 
-// 这里用了@SessionAttributes，可以直接把model中的user(也就key)放入其中,这样保证了session中存在user这个对象
-@SessionAttributes("user")
 public class UserController {
 
 	@Autowired
 	private UserService userServivce;
+	Map<String, Object> map = new HashMap<String, Object>();
 
 	/**
 	 * 电脑端
@@ -42,6 +46,11 @@ public class UserController {
 		return "regis";
 	}
 
+	@RequestMapping("/index")
+	public String index() {
+		return "index";
+	}
+
 	@RequestMapping("/console")
 	public String console() {
 		return "console";
@@ -49,15 +58,34 @@ public class UserController {
 
 	// 表单提交过来的路径
 	@RequestMapping("/checkLogin")
-	public String checkLogin(User user, Model model) {
+	@ResponseBody
+	public Map<String, Object> checkLogin(@RequestParam("username") String username,
+			@RequestParam("password") String password, HttpSession session, HttpServletRequest request,
+			HttpServletResponse response) {
 		// 调用service方法
-		user = userServivce.checkLogin(user.getUsername(), user.getPassword());
-		// 若有user则添加到model里并且跳转到成功页面
-		if (user != null) {
-			model.addAttribute("user", user);
-			return "index";
+		map.clear();
+		try {
+			User user = userServivce.checkLogin(username, password);
+
+			if (user != null) {
+				map.put("msg", "1");
+				session.setAttribute("user", user);
+
+				Cookie ck = new Cookie("username", username);
+				String path = request.getContextPath();
+				ck.setPath(path);
+				ck.setMaxAge(30 * 24 * 60 * 60);
+				response.addCookie(ck);
+
+			} else {
+				map.put("msg", "用户名或密码错误，请重新登陆！");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put("msg", e.getMessage());
 		}
-		return "fail";
+
+		return map;
 	}
 
 	@RequestMapping("/doregis")

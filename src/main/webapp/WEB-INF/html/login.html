@@ -47,21 +47,21 @@
 			<div class="lowin-box lowin-login">
 				<div class="lowin-box-inner">
 					<div class="login_error_box"></div>
-					<form action="/Smart_Building/user/checkLogin" method="post"
-						class="login_error">
+					<form method="post" class="login_error" action="javascript:;">
 						<p>欢迎登陆智能楼宇安防系统</p>
 						<div class="lowin-group">
 							<label>用户名</label> <input type="text" name="username"
-								placeholder="请输入用户名" class="lowin-input"
+								id="username" placeholder="请输入用户名" class="lowin-input"
 								nullmsg="用户名在2~10个字符之间！" datatype="s2-10"
 								errormsg="用户名在2~10个字符之间！" sucmsg="用户名符合格式！">
 						</div>
 						<div class="lowin-group password-group">
 							<label>密码 </label> <input type="password" name="password"
-								placeholder="请输入密码" class="lowin-input" nullmsg="密码在6~10位之间！"
-								datatype="*6-10" errormsg="密码在6~10位之间！" sucmsg="密码符合格式！">
+								id="password" placeholder="请输入密码" class="lowin-input"
+								nullmsg="密码在6~10位之间！" datatype="*6-10" errormsg="密码在6~10位之间！"
+								sucmsg="密码符合格式！">
 						</div>
-						<button class="lowin-btn login-btn">登陆</button>
+						<button class="lowin-btn login-btn" onclick="Login_click()">登陆</button>
 
 						<div class="text-foot">
 							没有账号? <a href="" class="register-link">注册</a>
@@ -106,6 +106,32 @@
 		Auth.init({
 	
 		});
+	</script>
+	<script type="text/javascript">
+		function Login_click() {
+			var username = $("#username").val();
+			var password = $("#password").val();
+			$.ajax({
+				type : 'POST',
+				url : '/Smart_Building/user/checkLogin',
+				data : {
+					username : username,
+					password : password
+				},
+				dataType : "json", //返回数据形式为json
+				success : function(map) {
+					if (map.msg == "1") {
+						window.self.location = 'index';
+	
+					} else {
+						alert("提示:" + map.msg);
+					}
+				},
+				error : function(xhr, status, error) {
+					alert('提示', xhr.responseText);
+				}
+			});
+		}
 	</script>
 </body>
 </html>

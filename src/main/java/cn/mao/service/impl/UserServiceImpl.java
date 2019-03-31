@@ -32,9 +32,9 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		User user1 = userMapper.findByUsername(user.getUsername());
 		System.out.print(user1);
-		if(user1 != null && user1.getPassword()!=null){
-			
-		}else{
+		if (user1 != null && user1.getPassword() != null) {
+
+		} else {
 			userMapper.registerByUsernameAndPassword(user.getUsername(), user.getPassword());
 		}
 	}
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		User user1 = userMapper.findByUsername(user.getUsername());
 		System.out.print(user1);
-		if(user1 != null && user1.getPassword()!=null){
+		if (user1 != null && user1.getPassword() != null) {
 			return "no";
 		}
 		return "yes";

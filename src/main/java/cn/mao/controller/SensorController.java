@@ -30,16 +30,16 @@ public class SensorController {
 
 	@RequestMapping(value = "getSensorMap")
 	@ResponseBody
-	public Map<String, Object> getSensorMap(int page,int limit) {
-		
-		System.out.println("读取传感器数据并显示在表格"+page+limit);
+	public Map<String, Object> getSensorMap(int page, int limit) {
+
+		System.out.println("读取传感器数据并显示在表格" + page + limit);
 
 		Map<String, Object> map = new HashMap<>();
 
-		List<Sensor> list = sensorService.getSensorByPage((page-1)*limit, limit);
-		List<Sensor> listall=sensorService.getSensorAll();
+		List<Sensor> list = sensorService.getSensorByPage((page - 1) * limit, limit);
+		List<Sensor> listall = sensorService.getSensorAll();
 		Integer count = listall.size();
-		
+
 		map.put("code", 0);
 		map.put("msg", "");
 		map.put("data", list);
