@@ -9,6 +9,25 @@
 <link rel="stylesheet" href="../assets/css/admin.css">
 <link rel="icon" href="/favicon.ico">
 <title>智能楼宇安防系统</title>
+
+<script type="text/javascript" src="../js/jquery.js"></script>
+
+<script type="text/javascript">
+
+	$.ajax({
+		type : 'POST',
+		url : '/Smart_Building/user/judgeLogin',
+		dataType : "json", //返回数据形式为json
+		success : function(map1) {
+			if (map1.logininfo == "fail") {
+				window.location.replace("/Smart_Building/user/login")
+				alert("未登录！请输入账号密码登录！" + map1.logininfo)
+			} else {
+				document.getElementById('welcome').innerHTML = "欢迎您，" + map1.logininfo + "！";
+			}
+		},
+	})
+</script>
 </head>
 <body class="layui-layout-body">
 	<div class="layui-layout layui-layout-admin">
@@ -22,7 +41,7 @@
 
 			<ul class="layui-nav layui-layout-right">
 				<li class="layui-nav-item"><a href="javascript:;"><img
-						src="" class="layui-nav-img">欢迎您，${user.username}!</a>
+						src="" class="layui-nav-img"><span id="welcome">未登录！</span></a>
 					<dl class="layui-nav-child">
 						<dd>
 							<a href="">个人中心</a>

@@ -51,7 +51,7 @@ public class UserController {
 		return "console";
 	}
 
-	// 表单提交过来的路径
+	// 登录
 	@RequestMapping("/checkLogin")
 	@ResponseBody
 	public Map<String, Object> checkLogin(@RequestParam("username") String username,
@@ -81,6 +81,21 @@ public class UserController {
 		}
 
 		return map;
+	}
+
+	// 在index检查是否登录
+	@RequestMapping("/judgeLogin")
+	@ResponseBody
+	public Map<String, Object> judgeLogin(HttpSession session) {
+		Map<String, Object> map1 = new HashMap<String, Object>();
+
+		User user = (User) session.getAttribute("user");
+		if (user != null) {
+			map1.put("logininfo", user.getUsername());
+		} else {
+			map1.put("logininfo", "fail");
+		}
+		return map1;
 	}
 
 	@RequestMapping("/doregis")
