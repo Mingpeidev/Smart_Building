@@ -41,11 +41,6 @@ public class UserController {
 		return "login";
 	}
 
-	@RequestMapping("/regis")
-	public String regis() {
-		return "regis";
-	}
-
 	@RequestMapping("/index")
 	public String index() {
 		return "index";
@@ -97,13 +92,6 @@ public class UserController {
 		} else {
 			return "fail";
 		}
-	}
-
-	// 测试超链接跳转到另一个页面是否可以取到session值
-	@RequestMapping("/anotherpage")
-	public String hrefpage() {
-
-		return "anotherpage";
 	}
 
 	// 注销方法
