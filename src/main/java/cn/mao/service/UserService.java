@@ -12,4 +12,6 @@ public interface UserService {
 
 	String judge(User user);
 
+	void updatePassword(String username, String password);
+
 }

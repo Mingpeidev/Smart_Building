@@ -46,6 +46,11 @@ public class UserController {
 		return "index";
 	}
 
+	@RequestMapping("/user")
+	public String user() {
+		return "user";
+	}
+
 	@RequestMapping("/console")
 	public String console() {
 		return "console";
@@ -115,6 +120,23 @@ public class UserController {
 		// 通过session.invalidata()方法来注销当前的session
 		session.invalidate();
 		return "login";
+	}
+
+	@RequestMapping("/updatePassword")
+	@ResponseBody
+	public Map<String, Object> updatePassword(@RequestParam("username") String username,
+			@RequestParam("password") String password, @RequestParam("password1") String password1) {
+		// 调用service方法
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		User user = userServivce.checkLogin(username, password);
+
+		if (user != null) {
+			userServivce.updatePassword(username, password1);
+			map2.put("msg", "success");
+		} else {
+			map2.put("msg", "fail");
+		}
+		return map2;
 	}
 
 	/**

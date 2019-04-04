@@ -49,4 +49,10 @@ public class UserServiceImpl implements UserService {
 		}
 		return "yes";
 	}
+
+	@Override
+	public void updatePassword(String username, String password) {
+		// TODO Auto-generated method stub
+		userMapper.updatePassword(username, password);
+	}
 }
