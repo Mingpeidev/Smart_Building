@@ -45,6 +45,10 @@ public class UserController {
 	public String index() {
 		return "index";
 	}
+	@RequestMapping("/smartset")
+	public String smart() {
+		return "smartset";
+	}
 
 	@RequestMapping("/user")
 	public String user() {
