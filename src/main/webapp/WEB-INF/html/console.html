@@ -19,10 +19,8 @@
 	var temp = [];
 	var humi = [];
 	var light = [];
-	var temptime = [];
-	var templen = 0,
-		humilen = 0,
-		lightlen = 0;
+	var time = [];
+
 	$.ajaxSetup({
 		async : false
 	});
@@ -30,19 +28,12 @@
 		var i;
 		len = list.length;
 		for (i = 0; i < len; i++) {
-			if (list[i].sensorname == "temp") {
-				templen++;
-				temp.push(Number(list[i].data));
-				temptime.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
-			}
-			if (list[i].sensorname == "humi") {
-				humi.push(Number(list[i].data));
-				humilen++;
-			}
-			if (list[i].sensorname == "light") {
-				light.push(Number(list[i].data));
-				lightlen++;
-			}
+
+			temp.push(Number(list[i].temp));
+			humi.push(Number(list[i].humi));
+			light.push(Number(list[i].light));
+			time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+
 		}
 	});
 </script>
@@ -63,7 +54,7 @@
 				text : '数据来源: mao'
 			},
 			xAxis : {
-				categories : temptime
+				categories : time
 			},
 			yAxis : {
 				title : {
@@ -206,12 +197,16 @@
 					sort : true
 				}
 				, {
-					field : 'sensorname',
-					title : '传感器名',
+					field : 'temp',
+					title : '温度',
 				}
 				, {
-					field : 'data',
-					title : '数据',
+					field : 'humi',
+					title : '湿度',
+				}
+				, {
+					field : 'light',
+					title : '光照度',
 				}
 				, {
 					field : 'time',
@@ -229,9 +224,9 @@
 		});
 	</script>
 	<script type="text/javascript">
-		document.getElementById('temp').innerHTML = temp[templen - 1] + "℃";
-		document.getElementById('humi').innerHTML = humi[humilen - 1] + "%";
-		document.getElementById('light').innerHTML = light[lightlen - 1];
+		document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
+		document.getElementById('humi').innerHTML = humi[len - 1] + "%";
+		document.getElementById('light').innerHTML = light[len - 1];
 	</script>
 </body>
 </html>

@@ -3,43 +3,73 @@ package cn.mao.pojo;
 import java.util.Date;
 
 public class Sensor {
-    private Integer id;
+	private Integer id;
 
-    private String sensorname;
+	private String temp;
 
-    private String data;
+	private String humi;
 
-    private Date time;
+	private String light;
 
-    public Integer getId() {
-        return id;
-    }
+	private String human;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	private String smoke;
 
-    public String getSensorname() {
-        return sensorname;
-    }
+	private Date time;
 
-    public void setSensorname(String sensorname) {
-        this.sensorname = sensorname == null ? null : sensorname.trim();
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getData() {
-        return data;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setData(String data) {
-        this.data = data == null ? null : data.trim();
-    }
+	public String getTemp() {
+		return temp;
+	}
 
-    public Date getTime() {
-        return time;
-    }
+	public void setTemp(String temp) {
+		this.temp = temp == null ? null : temp.trim();
+	}
 
-    public void setTime(Date time) {
-        this.time = time;
-    }
+	public String getHumi() {
+		return humi;
+	}
+
+	public void setHumi(String humi) {
+		this.humi = humi == null ? null : humi.trim();
+	}
+
+	public String getLight() {
+		return light;
+	}
+
+	public void setLight(String light) {
+		this.light = light == null ? null : light.trim();
+	}
+
+	public String getHuman() {
+		return human;
+	}
+
+	public void setHuman(String human) {
+		this.human = human == null ? null : human.trim();
+	}
+
+	public String getSmoke() {
+		return smoke;
+	}
+
+	public void setSmoke(String smoke) {
+		this.smoke = smoke == null ? null : smoke.trim();
+	}
+
+	public Date getTime() {
+		return time;
+	}
+
+	public void setTime(Date time) {
+		this.time = time;
+	}
 }
