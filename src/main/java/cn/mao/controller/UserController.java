@@ -53,9 +53,9 @@ public class UserController {
 	}
 
 	// 跳转到修改密码
-	@RequestMapping("/user")
-	public String user() {
-		return "user";
+	@RequestMapping("/modifypsd")
+	public String modifypsd() {
+		return "modifypsd";
 	}
 
 	// 跳转到控制台
