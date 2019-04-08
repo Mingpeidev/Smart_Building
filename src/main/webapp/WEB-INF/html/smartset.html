@@ -1,86 +1,110 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="../assets/css/layui.css">
-    <link rel="stylesheet" href="../assets/css/view.css"/>
-    <title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="stylesheet" href="../assets/css/layui.css">
+<link rel="stylesheet" href="../assets/css/view.css" />
+<title></title>
 </head>
 <body class="layui-view-body">
-    <div class="layui-content">
-        <div class="layui-row">
-            <div class="layui-card">
-                <div class="layui-card-header">表单</div>
-                <form class="layui-form layui-card-body" action="">
-                  <div class="layui-form-item">
-                    <label class="layui-form-label">输入框</label>
-                    <div class="layui-input-block">
-                      <input type="text" name="title" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <label class="layui-form-label">密码框</label>
-                    <div class="layui-input-inline">
-                      <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
-                    </div>
-                    <div class="layui-form-mid layui-word-aux">辅助文字</div>
-                  </div>
-                  <div class="layui-form-item">
-                    <label class="layui-form-label">选择框</label>
-                    <div class="layui-input-block">
-                      <select name="city" lay-verify="required">
-                        <option value=""></option>
-                        <option value="0">北京</option>
-                        <option value="1">上海</option>
-                        <option value="2">广州</option>
-                        <option value="3">深圳</option>
-                        <option value="4">杭州</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <label class="layui-form-label">复选框</label>
-                    <div class="layui-input-block">
-                      <input type="checkbox" name="like[write]" title="写作">
-                      <input type="checkbox" name="like[read]" title="阅读" checked>
-                      <input type="checkbox" name="like[dai]" title="发呆">
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <label class="layui-form-label">开关</label>
-                    <div class="layui-input-block">
-                      <input type="checkbox" name="switch" lay-skin="switch">
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <label class="layui-form-label">单选框</label>
-                    <div class="layui-input-block">
-                      <input type="radio" name="sex" value="男" title="男">
-                      <input type="radio" name="sex" value="女" title="女" checked>
-                    </div>
-                    <input type="checkbox" name="" title="写作" lay-skin="primary" checked>
-                  </div>
-                  <div class="layui-form-item layui-form-text">
-                    <label class="layui-form-label">文本域</label>
-                    <div class="layui-input-block">
-                      <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <div class="layui-input-block">
-                      <button class="layui-btn layui-btn-blue" lay-submit lay-filter="formDemo">立即提交</button>
-                      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-                    </div>
-                  </div>
-                </form>  
-            </div>
-        </div>
-    </div>
-    <script src="../assets/layui.all.js"></script>
-    <script>
-      var form = layui.form
-        ,layer = layui.layer;
-    </script>
+	<div class="layui-content">
+		<div class="layui-row">
+			<div class="layui-card">
+				<div class="layui-card-header">表单</div>
+				<form class="layui-form layui-card-body" action="javascript:;"
+					method="post">
+					<div class="layui-form-item">
+						<label class="layui-form-label">室温设置</label>
+						<div class="layui-input-inline"
+							style="width:100px;text-align: center;">
+							<select name="temp" lay-verify="required" id="temp">
+								<option value=""></option>
+								<option value="0">20</option>
+								<option value="1">21</option>
+								<option value="2">22</option>
+								<option value="3">23</option>
+								<option value="4">24</option>
+								<option value="5">25</option>
+								<option value="6">26</option>
+								<option value="7">27</option>
+								<option value="8">28</option>
+								<option value="9">29</option>
+								<option value="10">30</option>
+								<option value="11">31</option>
+								<option value="12">32</option>
+								<option value="13">33</option>
+								<option value="14">34</option>
+								<option value="15">35</option>
+								<option value="16">36</option>
+								<option value="17">37</option>
+								<option value="18">38</option>
+								<option value="19">39</option>
+								<option value="20">40</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">自动开灯时间</label>
+						<div class="layui-input-inline"
+							style="width:100px;text-align: center;">
+							<input type="text" class="layui-input" id="timepick">
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">智能设置开关</label>
+						<div class="layui-input-inline"
+							style="width:100px;text-align: center;">
+							<input type="checkbox" name="switch" lay-skin="switch"
+								lay-filter="switchTest" lay-text="ON|OFF" id="on_off">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button class="layui-btn layui-btn-blue" lay-submit
+								lay-filter="formDemo" onclick="sureBtn_click()">确定</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script src="../assets/layui.all.js"></script>
+	<script>
+		var form = layui.form,
+			layer = layui.layer,
+			laydate = layui.laydate;
+		var time,
+			hour,
+			minute;
+		var timelist = [];
+	
+		laydate.render({
+			elem : '#timepick',
+			type : 'time',
+			format : 'HH:mm',
+			btns : [ 'clear', 'confirm' ],
+			done : function(value, date, endDate) {
+				time = value;
+				timelist = value.split(":"); //分割小时和分钟
+	
+				hour = timelist[0];
+				minute = timelist[1];
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		function sureBtn_click() {
+			var myselect = document.getElementById("temp"); //拿到select对象
+			var index = myselect.selectedIndex; //拿到选中项的索引
+			var temp = myselect.options[index].text; //拿到选中项options的text;text用value替代可以拿到value
+	
+			var on_off = document.getElementById("on_off").checked;
+			alert("温度：" + temp + "  时间：" + hour + ":" + minute + "  开关：" + on_off)
+		}
+	</script>
 </body>
 </html>
