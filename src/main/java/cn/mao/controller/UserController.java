@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,7 +24,7 @@ public class UserController {
 
 	@Autowired
 	private UserService userServivce;
-	Map<String, Object> map = new HashMap<String, Object>();
+	Map<String, Object> loginmap = new HashMap<String, Object>();
 
 	/**
 	 * 电脑端
@@ -41,20 +40,25 @@ public class UserController {
 		return "login";
 	}
 
+	// 跳转到主页
 	@RequestMapping("/index")
 	public String index() {
 		return "index";
 	}
+
+	// 跳转到智能设置
 	@RequestMapping("/smartset")
 	public String smart() {
 		return "smartset";
 	}
 
+	// 跳转到修改密码
 	@RequestMapping("/user")
 	public String user() {
 		return "user";
 	}
 
+	// 跳转到控制台
 	@RequestMapping("/console")
 	public String console() {
 		return "console";
@@ -67,12 +71,12 @@ public class UserController {
 			@RequestParam("password") String password, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		// 调用service方法
-		map.clear();
+		loginmap.clear();
 		try {
 			User user = userServivce.checkLogin(username, password);
 
 			if (user != null) {
-				map.put("msg", "1");
+				loginmap.put("msg", "1");
 				session.setAttribute("user", user);
 
 				Cookie ck = new Cookie("username", username);
@@ -82,43 +86,49 @@ public class UserController {
 				response.addCookie(ck);
 
 			} else {
-				map.put("msg", "用户名或密码错误，请重新登陆！");
+				loginmap.put("msg", "用户名或密码错误，请重新登陆！");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			map.put("msg", e.getMessage());
+			loginmap.put("msg", e.getMessage());
 		}
 
-		return map;
+		return loginmap;
 	}
 
 	// 在index检查是否登录
 	@RequestMapping("/judgeLogin")
 	@ResponseBody
 	public Map<String, Object> judgeLogin(HttpSession session) {
-		Map<String, Object> map1 = new HashMap<String, Object>();
+		Map<String, Object> judgemap = new HashMap<String, Object>();
 
 		User user = (User) session.getAttribute("user");
 		if (user != null) {
-			map1.put("logininfo", user.getUsername());
+			judgemap.put("logininfo", user.getUsername());
 		} else {
-			map1.put("logininfo", "fail");
+			judgemap.put("logininfo", "fail");
 		}
-		return map1;
+		return judgemap;
 	}
 
+	// 注册
 	@RequestMapping("/doregis")
-	public String doregis(User user, Model model) {
+	@ResponseBody
+	public Map<String, Object> doregis(User user) {
+		Map<String, Object> registermap = new HashMap<String, Object>();
 
-		if (userServivce.judge(user) == "yes") {
+		if (user.getUsername().length() < 2 || user.getPassword().length() < 6) {
+			registermap.put("data", "格式不对");
+		} else if (userServivce.judge(user) == "yes") {
 			userServivce.register(user);
-			return "login";
+			registermap.put("data", "success");
 		} else {
-			return "fail";
+			registermap.put("data", "fail");
 		}
+		return registermap;
 	}
 
-	// 注销方法
+	// 注销
 	@RequestMapping("/outLogin")
 	public String outLogin(HttpSession session) {
 		// 通过session.invalidata()方法来注销当前的session
@@ -126,26 +136,28 @@ public class UserController {
 		return "login";
 	}
 
+	// 修改密码
 	@RequestMapping("/updatePassword")
 	@ResponseBody
 	public Map<String, Object> updatePassword(@RequestParam("username") String username,
 			@RequestParam("password") String password, @RequestParam("password1") String password1) {
 		// 调用service方法
-		Map<String, Object> map2 = new HashMap<String, Object>();
+		Map<String, Object> updatemap = new HashMap<String, Object>();
 		User user = userServivce.checkLogin(username, password);
 
 		if (user != null) {
 			userServivce.updatePassword(username, password1);
-			map2.put("msg", "success");
+			updatemap.put("msg", "success");
 		} else {
-			map2.put("msg", "fail");
+			updatemap.put("msg", "fail");
 		}
-		return map2;
+		return updatemap;
 	}
 
 	/**
 	 * 手机端
 	 */
+	// 登录
 	@RequestMapping("/logininphone")
 	@ResponseBody
 	public SsmResult logininphone(@RequestParam("username") String username,
@@ -158,6 +170,7 @@ public class UserController {
 		}
 	}
 
+	// 注册
 	@RequestMapping("/registerinphone")
 	@ResponseBody
 	public SsmResult registerinphone(@RequestParam("username") String username,

@@ -20,6 +20,7 @@ public class SensorController {
 	@Autowired
 	private SensorService sensorService;
 
+	// 折线图数据获取
 	@RequestMapping("/getSensorList")
 	@ResponseBody
 	public List<Sensor> getSensorList() {
@@ -28,6 +29,7 @@ public class SensorController {
 		return list;
 	}
 
+	// 表格数据获取
 	@RequestMapping(value = "getSensorMap")
 	@ResponseBody
 	public Map<String, Object> getSensorMap(int page, int limit) {

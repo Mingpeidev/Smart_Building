@@ -18,12 +18,12 @@
 		type : 'POST',
 		url : '/Smart_Building/user/judgeLogin',
 		dataType : "json", //返回数据形式为json
-		success : function(map1) {
-			if (map1.logininfo == "fail") {
+		success : function(judgemap) {
+			if (judgemap.logininfo == "fail") {
 				window.location.replace("/Smart_Building/user/login")
-				alert("未登录！请输入账号密码登录！" + map1.logininfo)
+				alert("未登录！请输入账号密码登录！" + judgemap.logininfo)
 			} else {
-				document.getElementById('welcome').innerHTML = "欢迎您，" + map1.logininfo + "！";
+				document.getElementById('welcome').innerHTML = "欢迎您，" + judgemap.logininfo + "！";
 			}
 		},
 	})
