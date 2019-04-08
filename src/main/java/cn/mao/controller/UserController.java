@@ -58,6 +58,18 @@ public class UserController {
 		return "modifypsd";
 	}
 
+	// 跳转到门禁
+	@RequestMapping("/door")
+	public String door() {
+		return "door";
+	}
+
+	// 跳转到报警信息
+	@RequestMapping("/alarm")
+	public String alarm() {
+		return "alarm";
+	}
+
 	// 跳转到控制台
 	@RequestMapping("/console")
 	public String console() {
