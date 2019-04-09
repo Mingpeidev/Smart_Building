@@ -6,9 +6,61 @@
 <link rel="stylesheet" href="../assets/css/layui.css">
 <link rel="stylesheet" href="../assets/css/view.css" />
 <title></title>
+<script type="text/javascript" src="../js/jquery.js"></script>
 </head>
 <body class="layui-view-body">
 
+
+
+
+
+	<div class="layui-tab-item layui-show">
+		<table id="sensortable"></table>
+	</div>
+
+
 	<script src="../assets/layui.all.js"></script>
+	<script>
+		var element = layui.element;
+		var table = layui.table;
+		var util = layui.util;
+	
+		//展示已知数据
+		table.render({
+			elem : '#sensortable',
+			url : '/Smart_Building/user/getSensorMap',
+			cols : [ [ //标题栏
+				{
+					field : 'id',
+					title : 'ID',
+					sort : true
+				}
+				, {
+					field : 'temp',
+					title : '温度',
+				}
+				, {
+					field : 'humi',
+					title : '湿度',
+				}
+				, {
+					field : 'light',
+					title : '光照度',
+				}
+				, {
+					field : 'time',
+					title : '时间',
+					templet : function(d) {
+						return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+					}
+				}
+			] ],
+			skin : 'line', //表格风格
+			even : true,
+			page : true, //是否显示分页
+			limits : [ 5, 7, 10 ],
+			limit : 5 //每页默认显示的数量
+		});
+	</script>
 </body>
 </html>
