@@ -76,7 +76,7 @@ public class UserController {
 		return "console";
 	}
 
-	// 登录
+	// 登录 加@RequestParam表示重命名，并且此字符串为必须
 	@RequestMapping("/checkLogin")
 	@ResponseBody
 	public Map<String, Object> checkLogin(@RequestParam("username") String username,
@@ -84,6 +84,7 @@ public class UserController {
 			HttpServletResponse response) {
 		// 调用service方法
 		loginmap.clear();
+
 		try {
 			User user = userServivce.checkLogin(username, password);
 
@@ -115,11 +116,13 @@ public class UserController {
 		Map<String, Object> judgemap = new HashMap<String, Object>();
 
 		User user = (User) session.getAttribute("user");
+
 		if (user != null) {
 			judgemap.put("logininfo", user.getUsername());
 		} else {
 			judgemap.put("logininfo", "fail");
 		}
+
 		return judgemap;
 	}
 
@@ -137,6 +140,7 @@ public class UserController {
 		} else {
 			registermap.put("data", "fail");
 		}
+
 		return registermap;
 	}
 
@@ -145,6 +149,7 @@ public class UserController {
 	public String outLogin(HttpSession session) {
 		// 通过session.invalidata()方法来注销当前的session
 		session.invalidate();
+
 		return "login";
 	}
 
@@ -155,6 +160,7 @@ public class UserController {
 			@RequestParam("password") String password, @RequestParam("password1") String password1) {
 		// 调用service方法
 		Map<String, Object> updatemap = new HashMap<String, Object>();
+
 		User user = userServivce.checkLogin(username, password);
 
 		if (user != null) {
@@ -163,6 +169,7 @@ public class UserController {
 		} else {
 			updatemap.put("msg", "fail");
 		}
+
 		return updatemap;
 	}
 
@@ -189,6 +196,7 @@ public class UserController {
 			@RequestParam("password") String password) {
 
 		User user = new User();
+
 		user.setUsername(username);
 		user.setPassword(password);
 

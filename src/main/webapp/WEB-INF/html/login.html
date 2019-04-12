@@ -149,8 +149,7 @@
 				dataType : "json", //返回数据形式为json
 				success : function(registermap) {
 					if (registermap.data == "success") {
-						layer.msg("注册成功:" + registermap.data);
-	
+						alert("注册成功:" + registermap.data);
 					} else {
 						layer.msg("注册失败:" + registermap.data);
 					}

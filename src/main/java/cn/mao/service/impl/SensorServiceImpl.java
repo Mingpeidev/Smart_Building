@@ -17,16 +17,21 @@ public class SensorServiceImpl implements SensorService {
 
 	@Override
 	public List<Sensor> getSensorAll() {
-		// TODO Auto-generated method stub
 		List<Sensor> sensor = sensorMapper.selectSensorAll();
+
 		return sensor;
 	}
 
 	@Override
 	public List<Sensor> getSensorByPage(int page, int limit) {
-		// TODO Auto-generated method stub
 		List<Sensor> sensorpage = sensorMapper.selectSensorByPage(page, limit);
+
 		return sensorpage;
+	}
+
+	@Override
+	public void insertSensor(Sensor sensor) {
+		sensorMapper.insert(sensor);
 	}
 
 }

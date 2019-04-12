@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
 	public User checkLogin(String username, String password) {
 
 		User user = userMapper.findByUsername(username);
-		if (user != null && user.getPassword().equals(password)) {
 
+		if (user != null && user.getPassword().equals(password)) {
 			return user;
 		}
 		return null;
@@ -29,9 +29,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void register(User user) {
-		// TODO Auto-generated method stub
+
 		User user1 = userMapper.findByUsername(user.getUsername());
-		System.out.print(user1);
+
 		if (user1 != null && user1.getPassword() != null) {
 
 		} else {
@@ -41,9 +41,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String judge(User user) {
-		// TODO Auto-generated method stub
+
 		User user1 = userMapper.findByUsername(user.getUsername());
-		System.out.print(user1);
+
 		if (user1 != null && user1.getPassword() != null) {
 			return "no";
 		}
@@ -52,7 +52,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updatePassword(String username, String password) {
-		// TODO Auto-generated method stub
 		userMapper.updatePassword(username, password);
 	}
 }

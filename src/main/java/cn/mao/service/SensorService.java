@@ -8,4 +8,6 @@ public interface SensorService {
 	public List<Sensor> getSensorAll();
 
 	public List<Sensor> getSensorByPage(int page, int limit);
+
+	void insertSensor(Sensor sensor);
 }

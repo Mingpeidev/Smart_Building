@@ -37,8 +37,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	// 地址
 	public Map<String, String> dataAll = new HashMap<String, String>();
 
-	public String xxx = new String("000");
-
 	public static void main(String[] args) {
 		Rxtx_sensor test1 = new Rxtx_sensor();
 		test1.init();

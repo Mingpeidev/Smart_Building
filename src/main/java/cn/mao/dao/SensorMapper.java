@@ -21,5 +21,6 @@ public interface SensorMapper {
 
 	List<Sensor> selectSensorAll();
 
+	// 加 @Param是给参数命名，让xml知道sql传入的参数名字
 	List<Sensor> selectSensorByPage(@Param("page") int page, @Param("limit") int limit);
 }
