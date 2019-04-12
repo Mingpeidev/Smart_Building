@@ -33,10 +33,10 @@ public class UserController {
 	// 正常访问login页面
 	@RequestMapping("/login")
 	public String login() {
-		if (Rxtx_sensor.haha() == null) {
-			System.out.println("尝试连接！电脑");
-			new Rxtx_sensor().init();
-		}
+
+		System.out.println("尝试连接！电脑");
+		new Rxtx_sensor().init();
+
 		return "login";
 	}
 

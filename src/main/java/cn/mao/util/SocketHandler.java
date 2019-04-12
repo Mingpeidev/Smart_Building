@@ -92,10 +92,10 @@ public class SocketHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		System.out.println("sessionOpen");
-		if (Rxtx_sensor.haha() == null) {
-			System.out.println("尝试连接！手机");
-			new Rxtx_sensor().init();
-		}
+
+		System.out.println("尝试连接！手机");
+		new Rxtx_sensor().init();
+
 	}
 
 	@Override

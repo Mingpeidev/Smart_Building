@@ -38,24 +38,45 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	public Map<String, String> dataAll = new HashMap<String, String>();
 
 	public String xxx = new String("000");
-	
+
 	public static void main(String[] args) {
 		Rxtx_sensor test1 = new Rxtx_sensor();
 		test1.init();
+		System.out.println("主函数");
 
 		MaplayoutThread map1 = test1.new MaplayoutThread();
 		map1.start();
 
-		// test1.readPort();
-		// test1.sendMsg();
 		// test1.closeSerialPort();
 	}
 
-	public static String haha() {
-		if (serialPort != null) {
-			return "haha";
-		} else {
-			return null;
+	/**
+	 * 监听函数
+	 */
+	public void serialEvent(SerialPortEvent serialPortEvent) {
+		switch (serialPortEvent.getEventType()) {
+		case SerialPortEvent.BI: // 通讯中断
+			break;
+		case SerialPortEvent.OE: // 溢位错误
+		case SerialPortEvent.FE: // 帧错误
+		case SerialPortEvent.PE: // 奇偶校验错误
+		case SerialPortEvent.CD: // 载波检测
+		case SerialPortEvent.CTS: // 清除发送
+		case SerialPortEvent.DSR: // 数据设备准备好
+		case SerialPortEvent.RI: // 响铃侦测
+		case SerialPortEvent.OUTPUT_BUFFER_EMPTY:// 输出缓冲区已清空
+			break;
+		// 获取到有效信息
+		case SerialPortEvent.DATA_AVAILABLE:
+
+			readComm();
+
+			ErrorControl();
+
+			break;
+
+		default:
+			break;
 		}
 	}
 
@@ -72,7 +93,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			System.out.println("端口被占用，先关闭串口，再连接！");
 		}
 		try {
-			portId = CommPortIdentifier.getPortIdentifier("COM6");
+			portId = CommPortIdentifier.getPortIdentifier("COM3");
 			System.out.println("打开端口：" + portId.getName());
 			serialPort = (SerialPort) portId.open(DEMONAME, 2000);
 			// 设置串口监听
@@ -102,104 +123,12 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		}
 	}
 
-	/**
-	 * 监听函数
-	 */
-	public void serialEvent(SerialPortEvent serialPortEvent) {
-		switch (serialPortEvent.getEventType()) {
-		case SerialPortEvent.BI: // 通讯中断
-		case SerialPortEvent.OE: // 溢位错误
-		case SerialPortEvent.FE: // 帧错误
-		case SerialPortEvent.PE: // 奇偶校验错误
-		case SerialPortEvent.CD: // 载波检测
-		case SerialPortEvent.CTS: // 清除发送
-		case SerialPortEvent.DSR: // 数据设备准备好
-		case SerialPortEvent.RI: // 响铃侦测
-		case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
-			break;
-		// 获取到有效信息
-		case SerialPortEvent.DATA_AVAILABLE:
-			// readPort();
-			readComm();
-			System.out.println("打开端口！");
-
-			ErrorControl();
-
-			break;
-
-		default:
-			break;
-		}
-	}
-
 	public int getSmart() {
 		return Smart;
 	}
 
 	public void setSmart(int smart) {
 		Smart = smart;
-	}
-
-	/**
-	 * 读取串口信息，并在服务器端显示解析后数据
-	 */
-	public void readPort() {
-		byte[] readBuffer = new byte[30];
-		int availableBytes = 0;
-
-		String rain = "";
-		String light = "";
-		String temp = "";
-		String humi = "";
-		String control = "";
-
-		try {
-			while (true) {
-				availableBytes = inputStream.available();
-				while (availableBytes > 0) {
-					inputStream.read(readBuffer);
-
-					String x = bytesToHexString(readBuffer).substring(0, 10);
-					String y = bytesToHexString(readBuffer).substring(10, 14);
-
-					if (x.equals("02071800f1") & y.equals("ee61")) {
-						rain = bytesToHexString(readBuffer).substring(16, 20);
-						System.out.println("rain:" + rain);
-					}
-					if (x.equals("02071800f1") & y.equals("00a0")) {
-						control = bytesToHexString(readBuffer).substring(16, 18);
-						System.out.println("control:" + control);
-					}
-					if (x.equals("02081800f1") && y.equals("d715")) {
-						light = bytesToHexString(readBuffer).substring(16, 20);
-						System.out.println("light:" + exchange(light));
-					}
-
-					if (x.equals("02081800f1") && y.equals("478c")) {
-						if (bytesToHexString(readBuffer).substring(14, 16).equals("01")) {
-							temp = bytesToHexString(readBuffer).substring(16, 20);
-							System.out.println("temp:" + exchange(temp));
-						}
-						if (bytesToHexString(readBuffer).substring(14, 16).equals("02")) {
-							humi = bytesToHexString(readBuffer).substring(16, 20);
-							System.out.println("humi:" + exchange(humi));
-						}
-					}
-
-					System.out.println(byte2HexStr(readBuffer));
-
-					// 更新循环条件
-					availableBytes = inputStream.available();
-				}
-				Thread.sleep(0);
-			}
-		} catch (IOException e) {
-			System.out.println("获取输出流失败");
-			System.exit(0);
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 	// 读取串口返回信息，并定义其长度,主要用这个进行数据库和智能控制
@@ -225,8 +154,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 				} else if (x == 11) {
 					String s = handler[5] + " " + handler[6] + " " + handler[7];
 					String t = handler[8] + " " + handler[9];
-					// System.err.println(s);
-					// System.err.println(t);
 					// System.out.println("网络地址：" + s + " 值：" + t);
 					dataAll.put(s, t);
 				}
@@ -235,6 +162,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.out.println("通信中断！");
+			closeSerialPort();
 		}
 
 	}
@@ -284,7 +213,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 					Iterator<String> it1 = keySet.iterator();
 					while (it1.hasNext()) {
 						String ID = it1.next();
-						System.out.println(ID + " " + dataAll.get(ID));
+						System.out.println("哈哈哈：" + ID + " " + dataAll.get(ID));
 					}
 
 				} catch (InterruptedException e) {
@@ -363,7 +292,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			}
 			serialPort.close();
 			serialPort = null;
-			System.out.println("关闭端口！");
+			System.out.println("已关闭端口！");
 		}
 	}
 
