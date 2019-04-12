@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TooManyListenersException;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("restriction")
 public class Rxtx_sensor implements SerialPortEventListener {
@@ -48,6 +49,25 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		// test1.closeSerialPort();
 	}
 
+	ScheduleUtil.SRunnable insertsensor = new ScheduleUtil.SRunnable() {
+		@Override
+		public void run() {
+
+			// 读取dataAll
+			Set<String> keySet = dataAll.keySet();
+			Iterator<String> it1 = keySet.iterator();
+			while (it1.hasNext()) {
+				String ID = it1.next();
+				System.out.println("哈哈哈：" + ID + " " + dataAll.get(ID));
+			}
+		}
+
+		@Override
+		public String getName() {
+			return "a";
+		}
+	};
+
 	/**
 	 * 监听函数
 	 */
@@ -69,7 +89,9 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			ErrorControl();
+			ScheduleUtil.stard(insertsensor, 0, 10, TimeUnit.SECONDS);
+
+			// ErrorControl();
 
 			break;
 
