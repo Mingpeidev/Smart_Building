@@ -47,7 +47,7 @@
   	
   	<filter>
 		<filter-name>Socketserver</filter-name>
-		<filter-class>cn.mao.util.Socketserver</filter-class>
+		<filter-class>cn.mao.Sensorandrfid.Socketserver</filter-class>
 	</filter>
 
 	<!--映射过滤器 -->

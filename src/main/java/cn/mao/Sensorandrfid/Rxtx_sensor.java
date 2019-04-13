@@ -1,4 +1,4 @@
-package cn.mao.util;
+package cn.mao.Sensorandrfid;
 
 import gnu.io.*;
 import java.io.IOException;
@@ -14,11 +14,18 @@ import java.util.concurrent.TimeUnit;
 
 import cn.mao.pojo.Sensor;
 import cn.mao.service.SensorService;
+import cn.mao.util.ScheduleUtil;
 
 @SuppressWarnings("restriction")
 public class Rxtx_sensor implements SerialPortEventListener {
 
 	private SensorService sensorService;
+
+	private String temp = "";
+	private String humi = "";
+	private String light = "";
+	private String human = "";
+	private String control = "";
 
 	String light_control = "";
 	String water_control = "";
@@ -64,22 +71,33 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			Iterator<String> it1 = keySet.iterator();
 			while (it1.hasNext()) {
 				String ID = it1.next();
-				System.out.println("哈哈哈：" + ID + " " + dataAll.get(ID));
+				if (ID.equals("8B 55 01")) {
+					temp = String.valueOf(exchange(dataAll.get(ID)));
+				} else if (ID.equals("8B 55 02")) {
+					humi = String.valueOf(exchange(dataAll.get(ID)));
+				} else if (ID.equals("F8 DE 01")) {
+					human = dataAll.get(ID);
+				} else if (ID.equals("E9 4E 01")) {
+					light = String.valueOf(exchange(dataAll.get(ID)));
+				} else if (ID.equals("14 24 01")) {
+					control = dataAll.get(ID);
+				}
 			}
+			System.out.println("哈哈哈：" +"temp:"+ temp +"humi:"+ humi +"human:"+ human + "light:"+light + "control:"+control);
 
-			sensorService = ApplicationContextHelper.getBean(SensorService.class);
+			/*sensorService = ApplicationContextHelper.getBean(SensorService.class);
 			Sensor sensor = new Sensor();
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-			sensor.setTemp("20");
-			sensor.setHumi("20");
-			sensor.setLight("20");
+			sensor.setTemp(temp);
+			sensor.setHumi(humi);
+			sensor.setLight(light);
 			sensor.setHuman("1");
 			sensor.setSmoke("1");
 			sensor.setTime(timestamp);
 
 			sensorService.insertSensor(sensor);
-			System.out.println("写入数据库" + timestamp);
+			System.out.println("写入数据库" + timestamp);*/
 		}
 
 		@Override
@@ -109,7 +127,11 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			ScheduleUtil.stard(insertsensor, 10, 10, TimeUnit.SECONDS);
+			if(ScheduleUtil.isAlive(insertsensor)){
+				ScheduleUtil.stop(insertsensor);
+				System.out.println("关闭进程");
+			}
+			ScheduleUtil.stard(insertsensor, 1, 1, TimeUnit.SECONDS);
 
 			// ErrorControl();
 
@@ -193,7 +215,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 					dataAll.put(s, t);
 				} else if (x == 11) {
 					String s = handler[5] + " " + handler[6] + " " + handler[7];
-					String t = handler[8] + " " + handler[9];
+					String t = handler[8] + handler[9];
 					// System.out.println("网络地址：" + s + " 值：" + t);
 					dataAll.put(s, t);
 				}
@@ -203,6 +225,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("通信中断！");
+			ScheduleUtil.stop(insertsensor);
 			closeSerialPort();
 		}
 

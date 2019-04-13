@@ -1,4 +1,4 @@
-package cn.mao.util;
+package cn.mao.Sensorandrfid;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -10,7 +10,7 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.json.JSONObject;
 
-import cn.mao.util.Rxtx_sensor;;
+import cn.mao.Sensorandrfid.Rxtx_sensor;;
 
 public class SocketHandler extends IoHandlerAdapter {
 

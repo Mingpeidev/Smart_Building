@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import cn.mao.pojo.User;
 import cn.mao.service.UserService;
-import cn.mao.util.Rxtx_sensor;
+import cn.mao.Sensorandrfid.Rxtx_sensor;
 import cn.mao.util.SsmResult;
 
 @Controller
