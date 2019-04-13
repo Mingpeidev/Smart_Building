@@ -39,6 +39,32 @@
 </script>
 
 <script type="text/javascript">
+	$.ajaxSetup({
+		async : false
+	});
+	$.getJSON('/Smart_Building/user/getRealtimedata', function(list) {
+		var i,
+			human,
+			smoke,
+			lamp,
+			air,
+			alarm,
+			door;
+		len = list.length;
+		for (i = 0; i < len; i++) {
+
+			human = Number(list[i].human);
+			smoke = Number(list[i].smoke);
+			lamp = Number(list[i].lamp);
+			air = Number(list[i].air);
+			alarm = Number(list[i].alarm);
+			door = Number(list[i].door);
+
+		}
+	});
+</script>
+
+<script type="text/javascript">
 
 	$(function() {
 		console.log("哈哈哈")
@@ -147,6 +173,36 @@
 								<div class="meta">
 									<span>灯</span>
 								</div>
+								<div class="total">
+									<span id="lamp">未获取</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-sm6 layui-col-md2">
+				<div class="layui-card">
+					<div class="layui-card-body chart-card">
+						<div class="chart-header">
+							<div class="metawrap">
+								<div class="meta">
+									<span>空调</span>
+								</div>
+								<div class="total">打开</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-sm6 layui-col-md2">
+				<div class="layui-card">
+					<div class="layui-card-body chart-card">
+						<div class="chart-header">
+							<div class="metawrap">
+								<div class="meta">
+									<span>门</span>
+								</div>
 								<div class="total">打开</div>
 							</div>
 						</div>
@@ -162,10 +218,11 @@
 						</ul>
 						<div class="layui-tab-content">
 							<div class="layui-tab-item layui-show">
-								<button class="layui-btn layui-btn-radius layui-btn-normal">开灯</button>
+								<button class="layui-btn layui-btn-radius layui-btn-normal"
+									onclick="Lamp_click()">灯状态</button>
 								<button class="layui-btn layui-btn-radius layui-btn-normal">开空调</button>
 								<button class="layui-btn layui-btn-radius layui-btn-normal">开门</button>
-								<a href="" class="layui-btn">开启</a>
+
 								<table id="sensortable"></table>
 							</div>
 							<div class="layui-tab-item">
@@ -227,6 +284,32 @@
 		document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
 		document.getElementById('humi').innerHTML = humi[len - 1] + "%";
 		document.getElementById('light').innerHTML = light[len - 1];
+		if (temp == "1") {
+			document.getElementById('lamp').innerHTML = "开启";
+		} else {
+			document.getElementById('lamp').innerHTML = "关闭";
+		}
+	</script>
+
+	<script type="text/javascript">
+		function Lamp_click() {
+			var lamp = document.getElementById('lamp').innerHTML;
+			$.ajax({
+				type : 'POST',
+				url : '/Smart_Building/user/Sensorcontrol',
+				data : {
+					lamp : lamp
+				},
+				dataType : "json", //返回数据形式为json
+				success : function(map) {
+					if (map.data == "success") {
+						alert("成功:" + map.data);
+					} else {
+						layer.msg("失败:" + map.data);
+					}
+				},
+			});
+		}
 	</script>
 </body>
 </html>

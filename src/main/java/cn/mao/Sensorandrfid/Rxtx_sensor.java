@@ -26,12 +26,13 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	private String humi = "";
 	private String light = "";
 	private String human = "";
+	private String smoke = "";
 	private String control = "";
 
-	String light_control = "";
-	String water_control = "";
-	String addo2_control = "";
-	String heating_control = "";
+	String lamp_control = "";
+	String air_control = "";
+	String alarm_control = "";
+	String door_control = "";
 
 	private int Swendu = 26;
 	private int Smart = 0;
@@ -63,7 +64,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		// test1.closeSerialPort();
 	}
 
-	ScheduleUtil.SRunnable insertsensor = new ScheduleUtil.SRunnable() {
+	// 温湿度、光照写入进程
+	ScheduleUtil.SRunnable insertsensorRunnable = new ScheduleUtil.SRunnable() {
 		@Override
 		public void run() {
 
@@ -84,26 +86,59 @@ public class Rxtx_sensor implements SerialPortEventListener {
 					control = dataAll.get(ID);
 				}
 			}
-			System.out.println("哈哈哈：" + "temp:" + temp + "humi:" + humi + "human:" + human + "light:" + light
-					+ "control:" + control);
+			System.out.println("哈哈哈：" + "human:" + human + "control:" + control);
 
-			sensorService = ApplicationContextHelper.getBean(SensorService.class);
-			Sensor sensor = new Sensor();
-			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-			sensor.setTemp(temp);
-			sensor.setHumi(humi);
-			sensor.setLight(light);
-			sensor.setTime(timestamp);
-
-			sensorService.insertSensor(sensor);
-			System.out.println("写入数据库" + timestamp);
+			/*
+			 * sensorService =
+			 * ApplicationContextHelper.getBean(SensorService.class); Sensor
+			 * sensor = new Sensor(); Timestamp timestamp = new
+			 * Timestamp(System.currentTimeMillis());
+			 * 
+			 * sensor.setTemp(temp); sensor.setHumi(humi);
+			 * sensor.setLight(light); sensor.setTime(timestamp);
+			 * 
+			 * sensorService.insertSensor(sensor); System.out.println("写入数据库" +
+			 * timestamp);
+			 */
 
 		}
 
 		@Override
 		public String getName() {
 			return "insertsensor";
+		}
+	};
+
+	ScheduleUtil.SRunnable insertcontroldataRunnable = new ScheduleUtil.SRunnable() {
+
+		@Override
+		public void run() {
+
+			// 读取dataAll
+			Set<String> keySet = dataAll.keySet();
+			Iterator<String> it1 = keySet.iterator();
+			while (it1.hasNext()) {
+				String ID = it1.next();
+				if (ID.equals("F8 DE 01")) {
+					human = dataAll.get(ID);
+				} else if (ID.equals("14 24 01")) {
+					control = dataAll.get(ID);
+				}
+			}
+
+			String x = hexString2binaryString(control);
+
+			lamp_control = x.substring(4, 5);
+			air_control = x.substring(5, 6);
+			alarm_control = x.substring(6, 7);
+			door_control = x.substring(7, 8);
+
+		}
+
+		@Override
+		public String getName() {
+			// 线程名
+			return "insertcontroldataRunnable";
 		}
 	};
 
@@ -128,8 +163,13 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			if (!ScheduleUtil.isAlive(insertsensor) && serialPort != null) {
-				ScheduleUtil.stard(insertsensor, 10, 10, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
+			if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
+				ScheduleUtil.stard(insertsensorRunnable, 1, 1, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
+				System.out.println("开启进程");
+			}
+
+			if (!ScheduleUtil.isAlive(insertcontroldataRunnable) && serialPort != null) {
+				ScheduleUtil.stard(insertcontroldataRunnable, 1, 1, TimeUnit.SECONDS);
 				System.out.println("开启进程");
 			}
 
@@ -225,7 +265,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("通信中断！");
-			ScheduleUtil.stop(insertsensor);
+			ScheduleUtil.stop(insertsensorRunnable);
+			ScheduleUtil.stop(insertcontroldataRunnable);
 			System.out.println("关闭进程！");
 			closeSerialPort();
 		}
@@ -233,10 +274,10 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	}
 
 	// 向串口发送信息方法
-	public void sendMsg(String com) {
+	public static void sendMsg(String com) {
 
 		String info = "";
-		String msg = "071800F100A001" + com;// 要发送的命令
+		String msg = "071800F1142401" + com;// 要发送的命令
 		info = "02" + msg + checkcode(msg);
 		System.out.println("info=" + info + "  字符串：" + hexStr2Bytes(info));
 
@@ -252,16 +293,16 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 	public void sendO2Msg(String o2) {
 		System.out.println("o2:" + o2);
-		System.out.println("0" + binaryString2hexString(light_control + water_control + o2 + heating_control));
-		sendMsg("0" + binaryString2hexString(light_control + water_control + o2 + heating_control));
-		addo2_control = o2;
+		System.out.println("0" + binaryString2hexString(lamp_control + air_control + o2 + door_control));
+		sendMsg("0" + binaryString2hexString(lamp_control + air_control + o2 + door_control));
+		alarm_control = o2;
 	}
 
 	public void sendWaterMsg(String water) {
 		System.out.println("water:" + water);
-		System.out.println("0" + binaryString2hexString(light_control + water + addo2_control + heating_control));
-		sendMsg("0" + binaryString2hexString(light_control + water + addo2_control + heating_control));
-		water_control = water;
+		System.out.println("0" + binaryString2hexString(lamp_control + water + alarm_control + door_control));
+		sendMsg("0" + binaryString2hexString(lamp_control + water + alarm_control + door_control));
+		air_control = water;
 	}
 
 	class MaplayoutThread extends Thread {
@@ -296,13 +337,13 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 		String x = hexString2binaryString(control);
 
-		light_control = x.substring(4, 5);
-		water_control = x.substring(5, 6);
-		addo2_control = x.substring(6, 7);
-		heating_control = x.substring(7, 8);
+		lamp_control = x.substring(4, 5);
+		air_control = x.substring(5, 6);
+		alarm_control = x.substring(6, 7);
+		door_control = x.substring(7, 8);
 		if (Smart == 1) {
-			if (dataAll.get("EE 61 01").equals("01") && water_control.equals("1")) {
-				sendMsg("0" + binaryString2hexString(light_control + "0" + addo2_control + heating_control));
+			if (dataAll.get("EE 61 01").equals("01") && air_control.equals("1")) {
+				sendMsg("0" + binaryString2hexString(lamp_control + "0" + alarm_control + door_control));
 			}
 			/*
 			 * else if (dataAll.get("EE 61 01").equals("00") &&
@@ -315,10 +356,10 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			String t = handler[1] + handler[0];
 			float wendu = (float) (Integer.parseInt(t, 16) / 100.00);
 
-			if (wendu > Swendu && heating_control.equals("1")) {
-				sendMsg("0" + binaryString2hexString(light_control + water_control + addo2_control + "0"));
-			} else if (wendu < Swendu && heating_control.equals("0")) {
-				sendMsg("0" + binaryString2hexString(light_control + water_control + addo2_control + "1"));
+			if (wendu > Swendu && door_control.equals("1")) {
+				sendMsg("0" + binaryString2hexString(lamp_control + air_control + alarm_control + "0"));
+			} else if (wendu < Swendu && door_control.equals("0")) {
+				sendMsg("0" + binaryString2hexString(lamp_control + air_control + alarm_control + "1"));
 			}
 		}
 	}
