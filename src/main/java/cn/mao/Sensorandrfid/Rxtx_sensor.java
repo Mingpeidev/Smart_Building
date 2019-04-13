@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import cn.mao.pojo.Sensor;
 import cn.mao.service.SensorService;
+import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.ScheduleUtil;
 
 @SuppressWarnings("restriction")
@@ -83,9 +84,10 @@ public class Rxtx_sensor implements SerialPortEventListener {
 					control = dataAll.get(ID);
 				}
 			}
-			System.out.println("哈哈哈：" +"temp:"+ temp +"humi:"+ humi +"human:"+ human + "light:"+light + "control:"+control);
+			System.out.println("哈哈哈：" + "temp:" + temp + "humi:" + humi + "human:" + human + "light:" + light
+					+ "control:" + control);
 
-			/*sensorService = ApplicationContextHelper.getBean(SensorService.class);
+			sensorService = ApplicationContextHelper.getBean(SensorService.class);
 			Sensor sensor = new Sensor();
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -97,12 +99,13 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			sensor.setTime(timestamp);
 
 			sensorService.insertSensor(sensor);
-			System.out.println("写入数据库" + timestamp);*/
+			System.out.println("写入数据库" + timestamp);
+
 		}
 
 		@Override
 		public String getName() {
-			return "a";
+			return "insertsensor";
 		}
 	};
 
@@ -127,11 +130,10 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			if(ScheduleUtil.isAlive(insertsensor)){
-				ScheduleUtil.stop(insertsensor);
-				System.out.println("关闭进程");
+			if (!ScheduleUtil.isAlive(insertsensor) && serialPort != null) {
+				ScheduleUtil.stard(insertsensor, 10, 10, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
+				System.out.println("开启进程");
 			}
-			ScheduleUtil.stard(insertsensor, 1, 1, TimeUnit.SECONDS);
 
 			// ErrorControl();
 
@@ -226,6 +228,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			e.printStackTrace();
 			System.out.println("通信中断！");
 			ScheduleUtil.stop(insertsensor);
+			System.out.println("关闭进程！");
 			closeSerialPort();
 		}
 
@@ -356,6 +359,14 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			serialPort.close();
 			serialPort = null;
 			System.out.println("已关闭端口！");
+		}
+	}
+
+	public static String judgelink() {
+		if (serialPort != null) {
+			return "link";
+		} else {
+			return null;
 		}
 	}
 

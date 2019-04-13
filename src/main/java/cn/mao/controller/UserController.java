@@ -34,8 +34,10 @@ public class UserController {
 	@RequestMapping("/login")
 	public String login() {
 
-		System.out.println("尝试连接！电脑");
-		new Rxtx_sensor().init();
+		if (Rxtx_sensor.judgelink() == null) {
+			System.out.println("尝试连接！电脑");
+			new Rxtx_sensor().init();
+		}
 
 		return "login";
 	}
