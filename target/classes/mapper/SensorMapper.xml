@@ -6,12 +6,10 @@
 		<result column="temp" jdbcType="VARCHAR" property="temp" />
 		<result column="humi" jdbcType="VARCHAR" property="humi" />
 		<result column="light" jdbcType="VARCHAR" property="light" />
-		<result column="human" jdbcType="VARCHAR" property="human" />
-		<result column="smoke" jdbcType="VARCHAR" property="smoke" />
 		<result column="time" jdbcType="TIMESTAMP" property="time" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, temp, humi, light, human, smoke, time
+		id, temp, humi, light, time
 	</sql>
 	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">
@@ -27,14 +25,11 @@
 	<insert id="insert" parameterType="cn.mao.pojo.Sensor">
 		insert into sensor (id, temp,
 		humi,
-		light, human, smoke,
-		time)
+		light, time)
 		values (#{id,jdbcType=INTEGER},
 		#{temp,jdbcType=VARCHAR},
 		#{humi,jdbcType=VARCHAR},
-		#{light,jdbcType=VARCHAR}, #{human,jdbcType=VARCHAR},
-		#{smoke,jdbcType=VARCHAR},
-		#{time,jdbcType=TIMESTAMP})
+		#{light,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP})
 	</insert>
 	<insert id="insertSelective" parameterType="cn.mao.pojo.Sensor">
 		insert into sensor
@@ -50,12 +45,6 @@
 			</if>
 			<if test="light != null">
 				light,
-			</if>
-			<if test="human != null">
-				human,
-			</if>
-			<if test="smoke != null">
-				smoke,
 			</if>
 			<if test="time != null">
 				time,
@@ -74,12 +63,6 @@
 			<if test="light != null">
 				#{light,jdbcType=VARCHAR},
 			</if>
-			<if test="human != null">
-				#{human,jdbcType=VARCHAR},
-			</if>
-			<if test="smoke != null">
-				#{smoke,jdbcType=VARCHAR},
-			</if>
 			<if test="time != null">
 				#{time,jdbcType=TIMESTAMP},
 			</if>
@@ -97,12 +80,6 @@
 			<if test="light != null">
 				light = #{light,jdbcType=VARCHAR},
 			</if>
-			<if test="human != null">
-				human = #{human,jdbcType=VARCHAR},
-			</if>
-			<if test="smoke != null">
-				smoke = #{smoke,jdbcType=VARCHAR},
-			</if>
 			<if test="time != null">
 				time = #{time,jdbcType=TIMESTAMP},
 			</if>
@@ -116,16 +93,13 @@
 		humi = #{humi,jdbcType=VARCHAR},
 		light
 		= #{light,jdbcType=VARCHAR},
-		human = #{human,jdbcType=VARCHAR},
-		smoke =
-		#{smoke,jdbcType=VARCHAR},
 		time = #{time,jdbcType=TIMESTAMP}
-		where id =
-		#{id,jdbcType=INTEGER}
+		where id
+		= #{id,jdbcType=INTEGER}
 	</update>
 
-	<select id="selectSensorAll" resultMap="BaseResultMap"
-		parameterType="java.util.List">
+	<select id="selectSensorAll" parameterType="java.util.List"
+		resultMap="BaseResultMap">
 		select * from sensor where id!=""
 	</select>
 

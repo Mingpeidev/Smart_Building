@@ -58,7 +58,7 @@ public class SensorController {
 	// 插入 如果需要返回JSON，XML或自定义mediaType内容到页面，则需要在对应的方法上加上@ResponseBody注解
 	@RequestMapping("/insertSensor")
 	@ResponseBody
-	public void insertSensor(String temp, String humi, String light, String human, String smoke, Timestamp time) {
+	public void insertSensor(String temp, String humi, String light, Timestamp time) {
 
 		System.out.println("插入数据");
 
@@ -67,8 +67,6 @@ public class SensorController {
 		sensor.setTemp(temp);
 		sensor.setHumi(humi);
 		sensor.setLight(light);
-		sensor.setHuman(human);
-		sensor.setSmoke(smoke);
 		sensor.setTime(time);
 
 		sensorService.insertSensor(sensor);

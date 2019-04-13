@@ -94,8 +94,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			sensor.setTemp(temp);
 			sensor.setHumi(humi);
 			sensor.setLight(light);
-			sensor.setHuman("1");
-			sensor.setSmoke("1");
 			sensor.setTime(timestamp);
 
 			sensorService.insertSensor(sensor);
