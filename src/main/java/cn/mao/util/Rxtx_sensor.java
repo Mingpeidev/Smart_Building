@@ -4,6 +4,7 @@ import gnu.io.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,8 +12,13 @@ import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
+import cn.mao.pojo.Sensor;
+import cn.mao.service.SensorService;
+
 @SuppressWarnings("restriction")
 public class Rxtx_sensor implements SerialPortEventListener {
+
+	private SensorService sensorService;
 
 	String light_control = "";
 	String water_control = "";
@@ -60,6 +66,20 @@ public class Rxtx_sensor implements SerialPortEventListener {
 				String ID = it1.next();
 				System.out.println("哈哈哈：" + ID + " " + dataAll.get(ID));
 			}
+
+			sensorService = ApplicationContextHelper.getBean(SensorService.class);
+			Sensor sensor = new Sensor();
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+			sensor.setTemp("20");
+			sensor.setHumi("20");
+			sensor.setLight("20");
+			sensor.setHuman("1");
+			sensor.setSmoke("1");
+			sensor.setTime(timestamp);
+
+			sensorService.insertSensor(sensor);
+			System.out.println("写入数据库" + timestamp);
 		}
 
 		@Override
@@ -89,7 +109,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			ScheduleUtil.stard(insertsensor, 0, 10, TimeUnit.SECONDS);
+			ScheduleUtil.stard(insertsensor, 10, 10, TimeUnit.SECONDS);
 
 			// ErrorControl();
 
