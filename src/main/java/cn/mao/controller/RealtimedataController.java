@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.mao.Sensorandrfid.Rxtx_sensor;
 import cn.mao.pojo.Realtimedata;
 import cn.mao.service.RealtimedataService;
+import cn.mao.util.CharFormatUtil;
 
 @Controller
 @RequestMapping("/user")
@@ -26,20 +27,24 @@ public class RealtimedataController {
 	public List<Realtimedata> getRealtimedata() {
 		System.out.println("读取控制信息");
 
-		List<Realtimedata> list = realtimedataService.getRealtimedatas();
+		List<Realtimedata> list = realtimedataService.getRealtimedataAll();
 
 		return list;
 	}
-	
+
 	@RequestMapping("/Sensorcontrol")
 	@ResponseBody
-	public Map<String, Object> Sensorcontrol(String data) {
+	public Map<String, Object> Sensorcontrol(String lamp, String air, String alarm, String door) {
 
 		System.out.println("实时控制");
 		Map<String, Object> map = new HashMap<String, Object>();
-		
-		Rxtx_sensor.sendMsg("02");
-		
+
+		String data = "0" + CharFormatUtil.binaryString2hexString(lamp + air + alarm + door);
+
+		Rxtx_sensor.sendMsg(data);
+
+		map.put("data", "success");
+
 		return map;
 
 	}

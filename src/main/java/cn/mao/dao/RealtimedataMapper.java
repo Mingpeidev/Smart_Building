@@ -1,5 +1,7 @@
 package cn.mao.dao;
 
+import java.util.List;
+
 import cn.mao.pojo.Realtimedata;
 
 public interface RealtimedataMapper {
@@ -14,4 +16,11 @@ public interface RealtimedataMapper {
 	int updateByPrimaryKeySelective(Realtimedata record);
 
 	int updateByPrimaryKey(Realtimedata record);
+
+	/**
+	 * 获取Realtimedata表内容
+	 * 
+	 * @return
+	 */
+	List<Realtimedata> selectRealtimedataAll();
 }

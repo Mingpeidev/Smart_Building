@@ -10,15 +10,21 @@ import cn.mao.pojo.Realtimedata;
 import cn.mao.service.RealtimedataService;
 
 @Service
-public class RealtimedataServiceImpl implements RealtimedataService{
-	
+public class RealtimedataServiceImpl implements RealtimedataService {
+
 	@Autowired
 	private RealtimedataMapper realtimedataMapper;
 
 	@Override
-	public List<Realtimedata> getRealtimedatas() {
-		List<Realtimedata> realtimedatas=(List<Realtimedata>) realtimedataMapper.selectByPrimaryKey(1);
+	public List<Realtimedata> getRealtimedataAll() {
+		List<Realtimedata> realtimedatas = realtimedataMapper.selectRealtimedataAll();
 		return realtimedatas;
+	}
+
+	@Override
+	public void updateRealtimedata(Realtimedata realtimedata) {
+
+		realtimedataMapper.updateByPrimaryKey(realtimedata);
 	}
 
 }

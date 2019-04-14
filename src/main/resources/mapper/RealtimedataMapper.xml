@@ -134,7 +134,10 @@
 		door =
 		#{door,jdbcType=VARCHAR},
 		time = #{time,jdbcType=TIMESTAMP}
-		where id =
-		#{id,jdbcType=INTEGER}
+		where id =1
 	</update>
+	<select id="selectRealtimedataAll" parameterType="java.util.List"
+		resultMap="BaseResultMap">
+		select * from realtimedata where id=1
+	</select>
 </mapper>

@@ -6,5 +6,7 @@ import cn.mao.pojo.Realtimedata;
 
 public interface RealtimedataService {
 
-	public List<Realtimedata> getRealtimedatas();
+	public List<Realtimedata> getRealtimedataAll();
+
+	public void updateRealtimedata(Realtimedata realtimedata);
 }
