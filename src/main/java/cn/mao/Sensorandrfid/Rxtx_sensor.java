@@ -88,6 +88,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			sensor.setTemp(temp);
 			sensor.setHumi(humi);
 			sensor.setLight(light);
+			sensor.setHuman("0");
+			sensor.setSmoke("0");
 			sensor.setTime(timestamp);
 
 			sensorService.insertSensor(sensor);
@@ -123,7 +125,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			readComm();
 
 			if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
-				ScheduleUtil.stard(insertsensorRunnable, 60, 60, TimeUnit.MINUTES);// 每10s写入一次传感器数据到数据库
+				ScheduleUtil.stard(insertsensorRunnable, 20, 20, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
 				System.out.println("开启进程");
 			}
 

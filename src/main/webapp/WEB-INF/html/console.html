@@ -24,16 +24,27 @@
 	$.ajaxSetup({
 		async : false
 	});
-	$.getJSON('/Smart_Building/user/getSensorList', function(list) {
+	$.getJSON('/Smart_Building/user/getSensorList', function(list) { //只获取最近10组数据
 		var i;
 		len = list.length;
-		for (i = 0; i < len; i++) {
+		if (len > 10) {
+			for (i = len - 10; i < len; i++) {
 
-			temp.push(Number(list[i].temp));
-			humi.push(Number(list[i].humi));
-			light.push(Number(list[i].light));
-			time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+				temp.push(Number(list[i].temp));
+				humi.push(Number(list[i].humi));
+				light.push(Number(list[i].light));
+				time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
 
+			}
+		} else {
+			for (i = 0; i < len; i++) {
+
+				temp.push(Number(list[i].temp));
+				humi.push(Number(list[i].humi));
+				light.push(Number(list[i].light));
+				time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+
+			}
 		}
 	});
 </script>
@@ -43,7 +54,6 @@
 <script type="text/javascript">
 
 	$(function() {
-		console.log("哈哈哈")
 		var chart = new Highcharts.Chart({
 			chart : {
 				renderTo : 'container',
@@ -102,7 +112,7 @@
 									<span>温度</span>
 								</div>
 								<div class="total">
-									<span id="temp">未获取</span>
+									<span id="temp" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -118,7 +128,7 @@
 									<span>湿度</span>
 								</div>
 								<div class="total">
-									<span id="humi">未获取</span>
+									<span id="humi" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -134,7 +144,7 @@
 									<span>光照度</span>
 								</div>
 								<div class="total">
-									<span id="light">未获取</span>
+									<span id="light" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -150,7 +160,7 @@
 									<span>灯</span>
 								</div>
 								<div class="total">
-									<span id="lamp_text">未获取</span>
+									<span id="lamp_text" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -166,7 +176,7 @@
 									<span>空调</span>
 								</div>
 								<div class="total">
-									<span id="air_text">未获取</span>
+									<span id="air_text" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -182,7 +192,7 @@
 									<span>报警器</span>
 								</div>
 								<div class="total">
-									<span id="alarm_text">未获取</span>
+									<span id="alarm_text" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -198,7 +208,7 @@
 									<span>门</span>
 								</div>
 								<div class="total">
-									<span id="door_text">未获取</span>
+									<span id="door_text" style="font-size:24px">未获取</span>
 								</div>
 							</div>
 						</div>
@@ -285,9 +295,15 @@
 		});
 	</script>
 	<script type="text/javascript">
-		document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
-		document.getElementById('humi').innerHTML = humi[len - 1] + "%";
-		document.getElementById('light').innerHTML = light[len - 1];
+		if (len > 10) {
+			document.getElementById('temp').innerHTML = temp[9] + "℃";
+			document.getElementById('humi').innerHTML = humi[9] + "%";
+			document.getElementById('light').innerHTML = light[9];
+		} else {
+			document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
+			document.getElementById('humi').innerHTML = humi[len - 1] + "%";
+			document.getElementById('light').innerHTML = light[len - 1];
+		}
 	</script>
 
 	<script type="text/javascript">
@@ -309,20 +325,10 @@
 	
 			$.getJSON('/Smart_Building/user/getRealtimedata', function(map) {
 				var i;
-				//len1 = list.length;
-				/* for (i = 0; i < len1; i++) {
-	
-					human = Number(list[i].human);
-					smoke = Number(list[i].smoke);
-					lamp = Number(list[i].lamp);
-					air = Number(list[i].air);
-					alarm = Number(list[i].alarm);
-					door = Number(list[i].door);
-				} */
-				lamp=map.lamp;
-				air=map.air;
-				alarm=map.alarm;
-				door=map.door;
+				lamp = map.lamp;
+				air = map.air;
+				alarm = map.alarm;
+				door = map.door;
 	
 			});
 			if (lamp == "1") {
@@ -369,7 +375,7 @@
 				dataType : "json", //返回数据形式为json
 				success : function(map) {
 					if (map.data == "success") {
-					layer.msg("成功" + map.data);
+						layer.msg(map.data);
 					} else {
 						layer.msg("失败:" + map.data);
 					}
@@ -389,7 +395,7 @@
 				dataType : "json", //返回数据形式为json
 				success : function(map) {
 					if (map.data == "success") {
-						alert("成功:" + map.data);
+						layer.msg(map.data);
 					} else {
 						layer.msg("失败:" + map.data);
 					}
@@ -409,7 +415,7 @@
 				dataType : "json", //返回数据形式为json
 				success : function(map) {
 					if (map.data == "success") {
-						alert("成功:" + map.data);
+						layer.msg(map.data);
 					} else {
 						layer.msg("失败:" + map.data);
 					}

@@ -76,7 +76,6 @@ public class SensorController {
 	@RequestMapping("/getRealtimedata")
 	@ResponseBody
 	public Map<String, Object> getRealtimedata() {
-		System.out.println("读取控制信息");
 
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -96,20 +95,23 @@ public class SensorController {
 			} else if (ID.equals("14 24 01")) {
 				control = Rxtx_sensor.dataAll.get(ID);
 			}
-			System.out.println("哈哈哈：" + ID + " " + Rxtx_sensor.dataAll.get(ID));
 		}
-		String x = CharFormatUtil.hexString2binaryString(control);
+		if (!control.equals("")) {
+			System.out.println("读取控制信息");
+			String x = CharFormatUtil.hexString2binaryString(control);
 
-		lamp_control = x.substring(4, 5);
-		air_control = x.substring(5, 6);
-		alarm_control = x.substring(6, 7);
-		door_control = x.substring(7, 8);
+			lamp_control = x.substring(4, 5);
+			air_control = x.substring(5, 6);
+			alarm_control = x.substring(6, 7);
+			door_control = x.substring(7, 8);
 
-		map.put("lamp", lamp_control);
-		map.put("air", air_control);
-		map.put("alarm", alarm_control);
-		map.put("door", door_control);
-
+			map.put("lamp", lamp_control);
+			map.put("air", air_control);
+			map.put("alarm", alarm_control);
+			map.put("door", door_control);
+		} else {
+			System.out.println("控制信息为空！");
+		}
 		return map;
 	}
 
@@ -131,60 +133,9 @@ public class SensorController {
 
 		String data = "0" + CharFormatUtil.binaryString2hexString(lamp + air + alarm + door);
 
-		String human = "";
-		String control = "";
-		String lamp_control = "";
-		String air_control = "";
-		String alarm_control = "";
-		String door_control = "";
+		Rxtx_sensor.sendMsg(data);
 
-		String lamp_control2 = "";
-		String air_control2 = "";
-		String alarm_control2 = "";
-		String door_control2 = "";
-
-		Set<String> keySet = Rxtx_sensor.dataAll.keySet();
-		Iterator<String> it1 = keySet.iterator();
-		while (it1.hasNext()) {
-			String ID = it1.next();
-			if (ID.equals("F8 DE 01")) {
-				human = Rxtx_sensor.dataAll.get(ID);
-			} else if (ID.equals("14 24 01")) {
-				control = Rxtx_sensor.dataAll.get(ID);
-			}
-			System.out.println("哈哈哈：" + ID + " " + Rxtx_sensor.dataAll.get(ID));
-		}
-		String x = CharFormatUtil.hexString2binaryString(control);
-
-		lamp_control = x.substring(4, 5);
-		air_control = x.substring(5, 6);
-		alarm_control = x.substring(6, 7);
-		door_control = x.substring(7, 8);
-
-		if (lamp != lamp_control) {
-			Rxtx_sensor.sendMsg(data);
-		}
-		Set<String> keySet1 = Rxtx_sensor.dataAll.keySet();
-		Iterator<String> it11 = keySet1.iterator();
-		while (it11.hasNext()) {
-			String ID = it11.next();
-			if (ID.equals("F8 DE 01")) {
-				human = Rxtx_sensor.dataAll.get(ID);
-			} else if (ID.equals("14 24 01")) {
-				control = Rxtx_sensor.dataAll.get(ID);
-			}
-			System.out.println("哈哈哈：" + ID + " " + Rxtx_sensor.dataAll.get(ID));
-		}
-		String x2 = CharFormatUtil.hexString2binaryString(control);
-
-		lamp_control2 = x.substring(4, 5);
-		air_control2 = x.substring(5, 6);
-		alarm_control2 = x.substring(6, 7);
-		door_control2 = x.substring(7, 8);
-
-		if (lamp_control != lamp_control2) {
-			map.put("data", "success");
-		}
+		map.put("data", "success");
 
 		return map;
 
