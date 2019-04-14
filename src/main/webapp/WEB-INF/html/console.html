@@ -38,31 +38,7 @@
 	});
 </script>
 
-<script type="text/javascript">
-	$.ajaxSetup({
-		async : false
-	});
-	var human,
-		smoke,
-		lamp,
-		air,
-		alarm,
-		door;
-	$.getJSON('/Smart_Building/user/getRealtimedata', function(list) {
-		var i;
-		len = list.length;
-		for (i = 0; i < len; i++) {
 
-			human = Number(list[i].human);
-			smoke = Number(list[i].smoke);
-			lamp = Number(list[i].lamp);
-			air = Number(list[i].air);
-			alarm = Number(list[i].alarm);
-			door = Number(list[i].door);
-		}
-
-	});
-</script>
 
 <script type="text/javascript">
 
@@ -238,12 +214,18 @@
 						</ul>
 						<div class="layui-tab-content">
 							<div class="layui-tab-item layui-show">
-								<button class="layui-btn layui-btn-radius layui-btn-normal">按钮</button>
-								<a href="" class="layui-btn" onclick="Lamp_click()"><span
-									id="lamp_btn">灯开关</span></a> <a href="" class="layui-btn"
-									onclick="Air_click()"><span id="air_btn">空调开关</span></a> <a
-									href="" class="layui-btn" onclick="Door_click()"><span
-									id="door_btn">门开关</span></a>
+								<button class="layui-btn layui-btn-radius layui-btn-normal"
+									onclick="Lamp_click()">
+									<span id="lamp_btn">灯开关</span>
+								</button>
+								<button class="layui-btn layui-btn-radius layui-btn-normal"
+									onclick="Air_click()">
+									<span id="air_btn">空调开关</span>
+								</button>
+								<button class="layui-btn layui-btn-radius layui-btn-normal"
+									onclick="Door_click()">
+									<span id="door_btn">门开关</span>
+								</button>
 
 								<table id="sensortable"></table>
 							</div>
@@ -303,40 +285,73 @@
 		});
 	</script>
 	<script type="text/javascript">
+		document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
+		document.getElementById('humi').innerHTML = humi[len - 1] + "%";
+		document.getElementById('light').innerHTML = light[len - 1];
+	</script>
+
+	<script type="text/javascript">
+		setInterval("getData()", 1000); //定时刷新局部信息
 		var lamp_control,
 			air_control,
 			alarm_control,
 			door_control;
+		var human,
+			smoke,
+			lamp,
+			air,
+			alarm,
+			door;
+		function getData() {
+			$.ajaxSetup({
+				async : false
+			});
 	
-		document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
-		document.getElementById('humi').innerHTML = humi[len - 1] + "%";
-		document.getElementById('light').innerHTML = light[len - 1];
-		if (lamp == "1") {
-			document.getElementById('lamp_text').innerHTML = "运行中";
-			document.getElementById('lamp_btn').innerHTML = "关闭灯";
-			lamp_control = "0";
-		} else if (lamp == "0") {
-			document.getElementById('lamp_text').innerHTML = "关闭中";
-			document.getElementById('lamp_btn').innerHTML = "打开灯";
-			lamp_control = "1";
-		}
-		if (air == "1") {
-			document.getElementById('air_text').innerHTML = "运行中";
-			document.getElementById('air_btn').innerHTML = "关闭空调";
-			air_control = "0";
-		} else if (air == "0") {
-			document.getElementById('air_text').innerHTML = "关闭中";
-			document.getElementById('air_btn').innerHTML = "打开空调";
-			air_control = "1";
-		}
-		if (door == "1") {
-			document.getElementById('door_text').innerHTML = "运行中";
-			document.getElementById('door_btn').innerHTML = "关闭门";
-			door_control = "0";
-		} else if (door == "0") {
-			document.getElementById('door_text').innerHTML = "关闭中";
-			document.getElementById('door_btn').innerHTML = "打开门";
-			door_control = "1";
+			$.getJSON('/Smart_Building/user/getRealtimedata', function(map) {
+				var i;
+				//len1 = list.length;
+				/* for (i = 0; i < len1; i++) {
+	
+					human = Number(list[i].human);
+					smoke = Number(list[i].smoke);
+					lamp = Number(list[i].lamp);
+					air = Number(list[i].air);
+					alarm = Number(list[i].alarm);
+					door = Number(list[i].door);
+				} */
+				lamp=map.lamp;
+				air=map.air;
+				alarm=map.alarm;
+				door=map.door;
+	
+			});
+			if (lamp == "1") {
+				document.getElementById('lamp_text').innerHTML = "运行中";
+				document.getElementById('lamp_btn').innerHTML = "关闭灯";
+				lamp_control = "0";
+			} else if (lamp == "0") {
+				document.getElementById('lamp_text').innerHTML = "关闭中";
+				document.getElementById('lamp_btn').innerHTML = "打开灯";
+				lamp_control = "1";
+			}
+			if (air == "1") {
+				document.getElementById('air_text').innerHTML = "运行中";
+				document.getElementById('air_btn').innerHTML = "关闭空调";
+				air_control = "0";
+			} else if (air == "0") {
+				document.getElementById('air_text').innerHTML = "关闭中";
+				document.getElementById('air_btn').innerHTML = "打开空调";
+				air_control = "1";
+			}
+			if (door == "1") {
+				document.getElementById('door_text').innerHTML = "运行中";
+				document.getElementById('door_btn').innerHTML = "关闭门";
+				door_control = "0";
+			} else if (door == "0") {
+				document.getElementById('door_text').innerHTML = "关闭中";
+				document.getElementById('door_btn').innerHTML = "打开门";
+				door_control = "1";
+			}
 		}
 	</script>
 
@@ -354,7 +369,7 @@
 				dataType : "json", //返回数据形式为json
 				success : function(map) {
 					if (map.data == "success") {
-						alert("成功:" + map.data);
+					layer.msg("成功" + map.data);
 					} else {
 						layer.msg("失败:" + map.data);
 					}

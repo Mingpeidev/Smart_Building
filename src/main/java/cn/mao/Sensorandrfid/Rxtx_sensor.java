@@ -53,7 +53,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	private static SerialPort serialPort;
 
 	// 地址
-	public Map<String, String> dataAll = new HashMap<String, String>();
+	public static Map<String, String> dataAll = new HashMap<String, String>();
 
 	public static void main(String[] args) {
 		Rxtx_sensor test1 = new Rxtx_sensor();
@@ -180,10 +180,10 @@ public class Rxtx_sensor implements SerialPortEventListener {
 				System.out.println("开启进程");
 			}
 
-			if (!ScheduleUtil.isAlive(insertcontroldataRunnable) && serialPort != null) {
-				ScheduleUtil.stard(insertcontroldataRunnable, 5, 5, TimeUnit.SECONDS);
+			/*if (!ScheduleUtil.isAlive(insertcontroldataRunnable) && serialPort != null) {
+				ScheduleUtil.stard(insertcontroldataRunnable, 10, 10, TimeUnit.SECONDS);
 				System.out.println("开启进程");
-			}
+			}*/
 
 			// ErrorControl();
 
