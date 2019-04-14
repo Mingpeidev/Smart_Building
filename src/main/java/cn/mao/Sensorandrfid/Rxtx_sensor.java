@@ -11,10 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
-
-import cn.mao.pojo.Realtimedata;
 import cn.mao.pojo.Sensor;
-import cn.mao.service.RealtimedataService;
 import cn.mao.service.SensorService;
 import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.CharFormatUtil;
@@ -24,7 +21,6 @@ import cn.mao.util.ScheduleUtil;
 public class Rxtx_sensor implements SerialPortEventListener {
 
 	private SensorService sensorService;
-	private RealtimedataService realtimedataService;
 
 	private String temp = "";
 	private String humi = "";
@@ -105,55 +101,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		}
 	};
 
-	ScheduleUtil.SRunnable insertcontroldataRunnable = new ScheduleUtil.SRunnable() {
-
-		@Override
-		public void run() {
-
-			// 读取dataAll
-			Set<String> keySet = dataAll.keySet();
-			Iterator<String> it1 = keySet.iterator();
-			while (it1.hasNext()) {
-				String ID = it1.next();
-				if (ID.equals("F8 DE 01")) {
-					human = dataAll.get(ID);
-				} else if (ID.equals("14 24 01")) {
-					control = dataAll.get(ID);
-				}
-			}
-
-			realtimedataService = ApplicationContextHelper.getBean(RealtimedataService.class);
-			Realtimedata realtimedata = new Realtimedata();
-			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-			String x = CharFormatUtil.hexString2binaryString(control);
-
-			lamp_control = x.substring(4, 5);
-			air_control = x.substring(5, 6);
-			alarm_control = x.substring(6, 7);
-			door_control = x.substring(7, 8);
-
-			realtimedata.setHuman(human);
-			realtimedata.setSmoke("1");
-			realtimedata.setLamp(lamp_control);
-			realtimedata.setAir(air_control);
-			realtimedata.setAlarm(alarm_control);
-			realtimedata.setDoor(door_control);
-			realtimedata.setTime(timestamp);
-
-			realtimedataService.updateRealtimedata(realtimedata);
-			System.out.println("数据库操作" + human + "@" + control + "@" + lamp_control + "@" + air_control + "@"
-					+ alarm_control + "@" + door_control);
-
-		}
-
-		@Override
-		public String getName() {
-			// 线程名
-			return "insertcontroldataRunnable";
-		}
-	};
-
 	/**
 	 * 串口监听函数
 	 */
@@ -179,11 +126,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 				ScheduleUtil.stard(insertsensorRunnable, 60, 60, TimeUnit.MINUTES);// 每10s写入一次传感器数据到数据库
 				System.out.println("开启进程");
 			}
-
-			/*if (!ScheduleUtil.isAlive(insertcontroldataRunnable) && serialPort != null) {
-				ScheduleUtil.stard(insertcontroldataRunnable, 10, 10, TimeUnit.SECONDS);
-				System.out.println("开启进程");
-			}*/
 
 			// ErrorControl();
 
@@ -280,7 +222,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			e.printStackTrace();
 			System.out.println("通信中断！");
 			ScheduleUtil.stop(insertsensorRunnable);
-			ScheduleUtil.stop(insertcontroldataRunnable);
 			System.out.println("关闭进程！");
 			closeSerialPort();
 		}

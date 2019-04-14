@@ -11,6 +11,10 @@ public class Sensor {
 
 	private String light;
 
+	private String human;
+
+	private String smoke;
+
 	private Date time;
 
 	public Integer getId() {
@@ -43,6 +47,22 @@ public class Sensor {
 
 	public void setLight(String light) {
 		this.light = light == null ? null : light.trim();
+	}
+
+	public String getHuman() {
+		return human;
+	}
+
+	public void setHuman(String human) {
+		this.human = human == null ? null : human.trim();
+	}
+
+	public String getSmoke() {
+		return smoke;
+	}
+
+	public void setSmoke(String smoke) {
+		this.smoke = smoke == null ? null : smoke.trim();
 	}
 
 	public Date getTime() {

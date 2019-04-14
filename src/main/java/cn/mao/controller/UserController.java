@@ -30,7 +30,11 @@ public class UserController {
 	 * 电脑端
 	 */
 
-	// 正常访问login页面
+	/**
+	 * 正常访问login页面
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/login")
 	public String login() {
 
@@ -42,43 +46,76 @@ public class UserController {
 		return "login";
 	}
 
-	// 跳转到主页
+	/**
+	 * 跳转到主页
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/index")
 	public String index() {
 		return "index";
 	}
 
-	// 跳转到智能设置
+	/**
+	 * 跳转到智能设置
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/smartset")
 	public String smart() {
 		return "smartset";
 	}
 
-	// 跳转到修改密码
+	/**
+	 * 跳转到修改密码
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/modifypsd")
 	public String modifypsd() {
 		return "modifypsd";
 	}
 
-	// 跳转到门禁
+	/**
+	 * 跳转到门禁
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/door")
 	public String door() {
 		return "door";
 	}
 
-	// 跳转到报警信息
+	/**
+	 * 跳转到报警信息
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/alarm")
 	public String alarm() {
 		return "alarm";
 	}
 
-	// 跳转到控制台
+	/**
+	 * 跳转到控制台
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/console")
 	public String console() {
 		return "console";
 	}
 
-	// 登录 加@RequestParam表示重命名，并且此字符串为必须
+	/**
+	 * 登录 加@RequestParam表示重命名，并且此字符串为必须
+	 * 
+	 * @param username
+	 * @param password
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping("/checkLogin")
 	@ResponseBody
 	public Map<String, Object> checkLogin(@RequestParam("username") String username,
@@ -111,7 +148,12 @@ public class UserController {
 		return loginmap;
 	}
 
-	// 在index检查是否登录
+	/**
+	 * 在index检查是否登录
+	 * 
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping("/judgeLogin")
 	@ResponseBody
 	public Map<String, Object> judgeLogin(HttpSession session) {
@@ -128,7 +170,12 @@ public class UserController {
 		return judgemap;
 	}
 
-	// 注册
+	/**
+	 * 注册
+	 * 
+	 * @param user
+	 * @return
+	 */
 	@RequestMapping("/doregis")
 	@ResponseBody
 	public Map<String, Object> doregis(User user) {
@@ -146,7 +193,12 @@ public class UserController {
 		return registermap;
 	}
 
-	// 注销
+	/**
+	 * 注销
+	 * 
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping("/outLogin")
 	public String outLogin(HttpSession session) {
 		// 通过session.invalidata()方法来注销当前的session
@@ -155,7 +207,14 @@ public class UserController {
 		return "login";
 	}
 
-	// 修改密码
+	/**
+	 * 修改密码
+	 * 
+	 * @param username
+	 * @param password
+	 * @param password1
+	 * @return
+	 */
 	@RequestMapping("/updatePassword")
 	@ResponseBody
 	public Map<String, Object> updatePassword(@RequestParam("username") String username,
@@ -178,7 +237,13 @@ public class UserController {
 	/**
 	 * 手机端
 	 */
-	// 登录
+	/**
+	 * 手机端登录
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	@RequestMapping("/logininphone")
 	@ResponseBody
 	public SsmResult logininphone(@RequestParam("username") String username,
@@ -191,7 +256,13 @@ public class UserController {
 		}
 	}
 
-	// 注册
+	/**
+	 * 手机端注册
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	@RequestMapping("/registerinphone")
 	@ResponseBody
 	public SsmResult registerinphone(@RequestParam("username") String username,
