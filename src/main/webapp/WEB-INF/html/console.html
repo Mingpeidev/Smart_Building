@@ -9,6 +9,7 @@
 <script type="text/javascript" src="../js/jquery.js"></script>
 <script type="text/javascript" src="../js/highcharts.js"></script>
 
+<!-- 获取温湿度信息以显示于折线图 -->
 <script type="text/javascript">
 
 	Highcharts.setOptions({
@@ -21,49 +22,72 @@
 	var light = [];
 	var time = [];
 
-	$.ajaxSetup({
-		async : false
-	});
-	$.getJSON('/Smart_Building/user/getSensorList', function(list) { //只获取最近10组数据
-		var i;
-		len = list.length;
-		if (len > 10) {
-			for (i = len - 10; i < len; i++) {
 
-				temp.push(Number(list[i].temp));
-				humi.push(Number(list[i].humi));
-				light.push(Number(list[i].light));
-				time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+	var loadData = function() {
 
+		$.ajaxSetup({
+			async : false
+		});
+		$.getJSON('/Smart_Building/user/getSensorList', function(list) { //只获取最近10组数据
+			var i;
+			temp = []; //重复获取时置空
+			time = [];
+			humi = [];
+			light = [];
+			len = list.length;
+			if (len > 10) {
+				for (i = len - 10; i < len; i++) {
+
+					temp.push(Number(list[i].temp));
+					humi.push(Number(list[i].humi));
+					light.push(Number(list[i].light));
+					time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+
+				}
+			} else {
+				for (i = 0; i < len; i++) {
+
+					temp.push(Number(list[i].temp));
+					humi.push(Number(list[i].humi));
+					light.push(Number(list[i].light));
+					time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+
+				}
 			}
-		} else {
-			for (i = 0; i < len; i++) {
-
-				temp.push(Number(list[i].temp));
-				humi.push(Number(list[i].humi));
-				light.push(Number(list[i].light));
-				time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
-
-			}
-		}
-	});
+		});
+	}
+	loadData();
 </script>
 
 
-
+<!-- 画动态折线图 -->
 <script type="text/javascript">
 
 	$(function() {
 		var chart = new Highcharts.Chart({
 			chart : {
 				renderTo : 'container',
-				type : 'line'
+				type : 'spline',
+				events : {
+					load : function() {
+						setInterval(function() {
+							loadData();
+
+							x = time[9]; //实时向末尾添加信息点     
+							y1 = temp[9];
+							y2 = humi[9];
+							console.log(x + "@" + y1 + "@" + y2)
+							chart.series[0].addPoint([ x, y1 ], true, true);
+							chart.series[1].addPoint([ x, y2 ], true, true);
+						}, 20000);
+					}
+				}
 			},
 			title : {
 				text : '温湿度折线图'
 			},
 			subtitle : {
-				text : '数据来源: mao'
+				text : '数据来源: 智能楼宇安防'
 			},
 			xAxis : {
 				categories : time
@@ -87,6 +111,12 @@
 					},
 					enableMouseTracking : true // 关闭鼠标跟踪，对应的提示框、点击事件会失效
 				}
+			},
+			legend : {
+				enabled : true
+			},
+			exporting : {
+				enabled : false
 			},
 			series : [ {
 				name : '温度(°C)',
@@ -236,11 +266,11 @@
 									onclick="Door_click()">
 									<span id="door_btn">门开关</span>
 								</button>
-
+								<!-- 表格调用 -->
 								<table id="sensortable"></table>
 							</div>
 							<div class="layui-tab-item">
-
+								<!-- 折线图调用 -->
 								<div id="container"
 									style="width:1000px;height:400px;margin:0 auto;"></div>
 								<div style="text-align:center;clear:both;"></div>
@@ -257,42 +287,58 @@
 		var table = layui.table;
 		var util = layui.util;
 	
-		//展示已知数据
-		table.render({
-			elem : '#sensortable',
-			url : '/Smart_Building/user/getSensorMap',
-			cols : [ [ //标题栏
-				{
-					field : 'id',
-					title : 'ID',
-					sort : true
-				}
-				, {
-					field : 'temp',
-					title : '温度',
-				}
-				, {
-					field : 'humi',
-					title : '湿度',
-				}
-				, {
-					field : 'light',
-					title : '光照度',
-				}
-				, {
-					field : 'time',
-					title : '时间',
-					templet : function(d) {
-						return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+		//展示已知数据于表格,并定时刷新
+		function getMap() {
+			table.render({
+				elem : '#sensortable',
+				url : '/Smart_Building/user/getSensorMap',
+				cols : [ [ //标题栏
+					{
+						field : 'id',
+						title : 'ID',
+						sort : true
 					}
-				}
-			] ],
-			skin : 'line', //表格风格
-			even : true,
-			page : true, //是否显示分页
-			limits : [ 5, 7, 10 ],
-			limit : 5 //每页默认显示的数量
-		});
+					, {
+						field : 'temp',
+						title : '温度',
+					}
+					, {
+						field : 'humi',
+						title : '湿度',
+					}
+					, {
+						field : 'light',
+						title : '光照度',
+					}
+					, {
+						field : 'time',
+						title : '时间',
+						templet : function(d) {
+							return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+						}
+					}
+				] ],
+				skin : 'line', //表格风格
+				even : true,
+				page : true, //是否显示分页
+				limits : [ 5, 7, 10 ],
+				limit : 5 //每页默认显示的数量
+			});
+		}
+		getMap();
+		setInterval(function() {
+			loadData();
+			getMap();
+			if (len > 10) {
+				document.getElementById('temp').innerHTML = temp[9] + "℃";
+				document.getElementById('humi').innerHTML = humi[9] + "%";
+				document.getElementById('light').innerHTML = light[9];
+			} else {
+				document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
+				document.getElementById('humi').innerHTML = humi[len - 1] + "%";
+				document.getElementById('light').innerHTML = light[len - 1];
+			}
+		}, 20000); //定时刷新温湿度显示和温湿度信息表格
 	</script>
 	<script type="text/javascript">
 		if (len > 10) {
@@ -306,8 +352,9 @@
 		}
 	</script>
 
+	<!-- 定时刷新局部信息 -->
 	<script type="text/javascript">
-		setInterval("getData()", 1000); //定时刷新局部信息
+		setInterval("getData()", 1000);
 		var lamp_control,
 			air_control,
 			alarm_control,
@@ -361,6 +408,7 @@
 		}
 	</script>
 
+	<!-- 开关点击事件 -->
 	<script type="text/javascript">
 		function Lamp_click() {
 			$.ajax({
