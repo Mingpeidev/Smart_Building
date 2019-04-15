@@ -94,7 +94,7 @@ public class CharFormatUtil {
 
 		int m = 0, n = 0;
 		int l = src.length() / 2;
-		System.out.println(l);
+		System.out.println(l+"位");
 		byte[] ret = new byte[l];
 		for (int i = 0; i < l; i++) {
 			m = i * 2 + 1;

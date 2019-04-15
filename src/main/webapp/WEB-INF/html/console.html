@@ -22,37 +22,50 @@
 	var light = [];
 	var time = [];
 
+	var state;
+
 
 	var loadData = function() {
 
-		$.ajaxSetup({
-			async : false
-		});
-		$.getJSON('/Smart_Building/user/getSensorList', function(list) { //只获取最近10组数据
-			var i;
-			temp = []; //重复获取时置空
-			time = [];
-			humi = [];
-			light = [];
-			len = list.length;
-			if (len > 10) {
-				for (i = len - 10; i < len; i++) {
-
-					temp.push(Number(list[i].temp));
-					humi.push(Number(list[i].humi));
-					light.push(Number(list[i].light));
-					time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
-
+		$.ajax({
+			type : 'POST',
+			url : '/Smart_Building/user/getSensorList',
+			async : false,
+			dataType : "json", //返回数据形式为json
+			success : function(map) {
+				if (map.data == "success") {
+					state = "success";
+				} else {
+					state = "fail";
 				}
-			} else {
-				for (i = 0; i < len; i++) {
+				var i;
+				temp = []; //重复获取时置空
+				time = [];
+				humi = [];
+				light = [];
+				len = map.list.length;
+				if (len > 10) {
+					for (i = len - 10; i < len; i++) {
 
-					temp.push(Number(list[i].temp));
-					humi.push(Number(list[i].humi));
-					light.push(Number(list[i].light));
-					time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(list[i].time)))
+						temp.push(Number(map.list[i].temp));
+						humi.push(Number(map.list[i].humi));
+						light.push(Number(map.list[i].light));
+						time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(map.list[i].time)))
 
+					}
+				} else {
+					for (i = 0; i < len; i++) {
+
+						temp.push(Number(map.list[i].temp));
+						humi.push(Number(map.list[i].humi));
+						light.push(Number(map.list[i].light));
+						time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(map.list[i].time)))
+
+					}
 				}
+			},
+			error : function(xhr, status, error) {
+				layer.msg('请连接网络！');
 			}
 		});
 	}
@@ -72,13 +85,18 @@
 					load : function() {
 						setInterval(function() {
 							loadData();
+							var x,
+								y1,
+								y2;
+							if (state == "success") {
+								x = time[9]; //实时向末尾添加信息点     
+								y1 = temp[9];
+								y2 = humi[9];
+								console.log(x + "@" + y1 + "@" + y2)
+								chart.series[0].addPoint([ x, y1 ], true, true);
+								chart.series[1].addPoint([ x, y2 ], true, true);
+							}
 
-							x = time[9]; //实时向末尾添加信息点     
-							y1 = temp[9];
-							y2 = humi[9];
-							console.log(x + "@" + y1 + "@" + y2)
-							chart.series[0].addPoint([ x, y1 ], true, true);
-							chart.series[1].addPoint([ x, y2 ], true, true);
 						}, 20000);
 					}
 				}
@@ -87,7 +105,7 @@
 				text : '温湿度折线图'
 			},
 			subtitle : {
-				text : '数据来源: 智能楼宇安防'
+				text : '智能楼宇安防'
 			},
 			xAxis : {
 				categories : time
@@ -366,18 +384,20 @@
 			alarm,
 			door;
 		function getData() {
-			$.ajaxSetup({
-				async : false
+			$.ajax({
+				type : 'POST',
+				url : '/Smart_Building/user/getRealtimedata',
+				async : false,
+				dataType : "json", //返回数据形式为json
+				success : function(map) {
+					var i;
+					lamp = map.lamp;
+					air = map.air;
+					alarm = map.alarm;
+					door = map.door;
+				}
 			});
 	
-			$.getJSON('/Smart_Building/user/getRealtimedata', function(map) {
-				var i;
-				lamp = map.lamp;
-				air = map.air;
-				alarm = map.alarm;
-				door = map.door;
-	
-			});
 			if (lamp == "1") {
 				document.getElementById('lamp_text').innerHTML = "运行中";
 				document.getElementById('lamp_btn').innerHTML = "关闭灯";
@@ -425,7 +445,7 @@
 					if (map.data == "success") {
 						layer.msg(map.data);
 					} else {
-						layer.msg("失败:" + map.data);
+						layer.msg("请连接串口" + map.data);
 					}
 				},
 			});
@@ -445,7 +465,7 @@
 					if (map.data == "success") {
 						layer.msg(map.data);
 					} else {
-						layer.msg("失败:" + map.data);
+						layer.msg("请连接串口" + map.data);
 					}
 				},
 			});
@@ -465,7 +485,7 @@
 					if (map.data == "success") {
 						layer.msg(map.data);
 					} else {
-						layer.msg("失败:" + map.data);
+						layer.msg("请连接串口" + map.data);
 					}
 				},
 			});

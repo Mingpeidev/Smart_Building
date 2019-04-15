@@ -31,12 +31,21 @@ public class SensorController {
 	 */
 	@RequestMapping("/getSensorList")
 	@ResponseBody
-	public List<Sensor> getSensorList() {
+	public Map<String, Object> getSensorList() {
 		System.out.println("读取温湿度数据并显示在折线图");
+		Map<String, Object> map = new HashMap<>();
 
 		List<Sensor> list = sensorService.getSensorAll();
 
-		return list;
+		if (Rxtx_sensor.judgelink() != null) {
+			map.put("list", list);
+			map.put("data", "success");
+		} else {
+			map.put("list", list);
+			map.put("data", "fail");// 标志位，标志是否动态变化
+		}
+
+		return map;
 	}
 
 	/**
@@ -109,8 +118,6 @@ public class SensorController {
 			map.put("air", air_control);
 			map.put("alarm", alarm_control);
 			map.put("door", door_control);
-		} else {
-			System.out.println("控制信息为空！");
 		}
 		return map;
 	}
@@ -131,11 +138,15 @@ public class SensorController {
 		System.out.println("实时控制");
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		String data = "0" + CharFormatUtil.binaryString2hexString(lamp + air + alarm + door);
+		if (Rxtx_sensor.judgelink() != null) {
 
-		Rxtx_sensor.sendMsg(data);
-
-		map.put("data", "success");
+			String data = "0" + CharFormatUtil.binaryString2hexString(lamp + air + alarm + door);
+			Rxtx_sensor.sendMsg(data);
+			map.put("data", "success");
+		} else {
+			map.put("data", "fail");
+			System.out.println("未连接串口，操作失败！");
+		}
 
 		return map;
 
