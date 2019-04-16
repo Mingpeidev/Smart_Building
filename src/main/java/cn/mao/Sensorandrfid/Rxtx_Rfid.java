@@ -20,6 +20,8 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 
 	// RS-232的串行口
 	private static SerialPort serialPort;
+	
+	private static String ID="";
 
 	public static void main(String[] args) {
 
@@ -31,6 +33,10 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 		System.out.println("寻卡");
 
 		// test1.closeSerialPort();
+	}
+	
+	public static String getID(){
+		return ID;
 	}
 
 	/**
@@ -126,9 +132,10 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 				int x = data2.split(" ").length;
 				String[] handler = data2.split(" ");
 				if (x == 12) {
-					String ID = handler[6] + handler[7] + handler[8] + handler[9];
+					ID = handler[6] + handler[7] + handler[8] + handler[9];
 					System.out.println("防冲突成功。卡号：" + ID);
 				} else {
+					ID="";
 					System.out.println("fail");
 				}
 				break;
