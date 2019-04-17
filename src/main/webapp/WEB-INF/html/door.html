@@ -42,7 +42,8 @@
 
 				<div style="margin-top:100px;margin-left:70px"
 					class="layui-btn-container">
-					<button type="button" class="layui-btn" onclick="searchcard()">寻卡</button>
+					<button type="button" class="layui-btn"
+						onclick="setInterval_searchcard()">寻卡</button>
 					<button name="Btn1" class="layui-btn" lay-submit lay-filter="*">添加</button>
 					<button name="Btn2" class="layui-btn" lay-submit lay-filter="**">修改</button>
 					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -61,23 +62,7 @@
 								<div class="meta">
 									<span>提示信息</span>
 								</div>
-								<div class="total" id="welcome_text">欢迎haha进入房间</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>门</span>
-								</div>
-								<div class="total">
-									<span id="door_text" style="font-size:24px">未获取</span>
-								</div>
+								<div class="total" id="welcome_text">无状态</div>
 							</div>
 						</div>
 					</div>
@@ -87,7 +72,37 @@
 			<div class="layui-col-sm12 layui-col-md12">
 				<div class="layui-card">
 					<div class="layui-tab layui-tab-brief">
-						<table class="layui-hide" id="residenttable" lay-filter="test"></table>
+						<ul class="layui-tab-title">
+							<li class="layui-this">实时门禁信息</li>
+							<li>住户管理</li>
+						</ul>
+						<div class="layui-tab-content">
+							<div class="layui-tab-item layui-show">
+								<form class="layui-form">
+									<div class="layui-form-item">
+										<div class="layui-inline">
+											<div class="layui-input-inline">
+												<input type="text" name="searchresidentname"
+													lay-verify="required" id="searchresidentname"
+													placeholder="请输入居民名字查找" autocomplete="on"
+													class="layui-input">
+											</div>
+										</div>
+										<div class="layui-inline">
+
+											<button name="Btn3" class="layui-btn" lay-submit
+												lay-filter="***">查找</button>
+
+										</div>
+									</div>
+
+									<div class="layui-form-item"></div>
+								</form>
+							</div>
+							<div class="layui-tab-item">
+								<table class="layui-hide" id="residenttable" lay-filter="test"></table>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -104,6 +119,7 @@
     <button class="layui-btn layui-btn-radius layui-btn-normal" lay-event="add">添加居民</button>
   </div>
 </script>
+	<!-- layui相关依赖及其操作 -->
 	<script src="../assets/layui.js"></script>
 	<script>
 		var element = layui.element;
@@ -135,6 +151,7 @@
 						if (map.data == "写入成功") {
 							layer.close(index1) //关闭弹窗
 							getMap();
+							clearInterval(interval);
 						}
 					}
 				})
@@ -158,6 +175,7 @@
 						layer.msg(map.data);
 						layer.close(index2) //关闭弹窗
 						getMap();
+						clearInterval(interval);
 					}
 				})
 				return false;
@@ -201,9 +219,6 @@
 			}
 			getMap();
 	
-	
-	
-	
 			//监听头工具栏事件
 			table.on('toolbar(test)', function(obj) {
 				switch (obj.event) {
@@ -217,6 +232,13 @@
 					});
 					document.all["Btn1"].style.display = "inline";
 					document.all["Btn2"].style.display = "none";
+	
+					//初始赋值
+					form.val('first', {
+						'residentname' : "",
+						'doorid' : "",
+						'sex' : "男",
+					});
 	
 					break;
 				}
@@ -258,7 +280,7 @@
 							success : function(map) {
 	
 								layer.msg(map.data);
-								
+	
 							}
 						})
 						layer.close(index);
@@ -273,6 +295,11 @@
 	</script>
 	<!-- 检测rfid卡号 -->
 	<script type="text/javascript">
+		var interval
+		function setInterval_searchcard() {
+			clearInterval(interval);
+			interval = setInterval("searchcard()", 1000)
+		}
 		function searchcard() {
 			$.ajax({
 				type : 'POST',
@@ -281,8 +308,7 @@
 				dataType : "json", //返回数据形式为json
 				success : function(map) {
 					if (map.ID == "fail") {
-						layer.msg("未检测到卡");
-						document.getElementById("doorid").value = "";
+	
 					} else {
 						ID = map.ID;
 						document.getElementById("doorid").value = ID;

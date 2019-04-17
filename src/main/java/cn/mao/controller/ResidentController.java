@@ -48,7 +48,7 @@ public class ResidentController {
 	}
 
 	/**
-	 * 获取住户信息表
+	 * 分页获取住户信息表
 	 * 
 	 * @return
 	 */
