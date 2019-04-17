@@ -21,4 +21,12 @@ public interface TriprecordService {
 	 */
 	public List<Triprecord> getTriprecordByPage(int page, int limit);
 
+	/**
+	 * 按住户名字查找住户出行记录
+	 * 
+	 * @param residentname
+	 * @return
+	 */
+	public List<Triprecord> getTriprecordAllByname(String residentname);
+
 }

@@ -21,5 +21,7 @@ public interface TriprecordMapper {
 
 	List<Triprecord> selectTriprecordAll();
 
+	List<Triprecord> selectTriprecordAllByname(@Param("residentname") String residentname);
+
 	List<Triprecord> selectTriprecordByPage(@Param("page") int page, @Param("limit") int limit);
 }

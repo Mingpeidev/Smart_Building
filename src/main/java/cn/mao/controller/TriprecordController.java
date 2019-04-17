@@ -19,24 +19,38 @@ public class TriprecordController {
 	private TriprecordService triprecordService;
 
 	/**
-	 * 分页获取出行信息表
+	 * 分页获取出行信息表，并可按住户名查询此住户出行记录
 	 * 
 	 * @return
 	 */
 	@RequestMapping("/getTriprecordList")
 	@ResponseBody
-	public Map<String, Object> getTriprecordList(int page, int limit) {
+	public Map<String, Object> getTriprecordList(int page, int limit, String residentname) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		List<Triprecord> list = triprecordService.getTriprecordByPage((page - 1) * limit, limit);
-		List<Triprecord> triprecords = triprecordService.getTriprecordAll();
+		if (residentname != null && residentname != "") {
 
-		Integer count = triprecords.size();
+			System.out.println("查询居民" + residentname + "的出行信息");
+			List<Triprecord> list = triprecordService.getTriprecordAllByname(residentname);
 
-		map.put("code", 0);
-		map.put("msg", "");
-		map.put("data", list);
-		map.put("count", count);
+			Integer count = list.size();
+
+			map.put("code", 0);
+			map.put("msg", "");
+			map.put("data", list);
+			map.put("count", count);
+		} else {
+			System.out.println("显示所有住户出行记录");
+			List<Triprecord> list = triprecordService.getTriprecordByPage((page - 1) * limit, limit);
+			List<Triprecord> triprecords = triprecordService.getTriprecordAll();
+
+			Integer count = triprecords.size();
+
+			map.put("code", 0);
+			map.put("msg", "");
+			map.put("data", list);
+			map.put("count", count);
+		}
 
 		return map;
 	}

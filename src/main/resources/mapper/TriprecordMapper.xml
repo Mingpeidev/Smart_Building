@@ -19,13 +19,16 @@
 		where id = #{id,jdbcType=INTEGER}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-		delete from triprecord
+		delete from
+		triprecord
 		where id = #{id,jdbcType=INTEGER}
 	</delete>
 	<insert id="insert" parameterType="cn.mao.pojo.Triprecord">
-		insert into triprecord (id, residentname, doorid,
+		insert into triprecord (id,
+		residentname, doorid,
 		state, time)
-		values (#{id,jdbcType=INTEGER}, #{residentname,jdbcType=VARCHAR},
+		values (#{id,jdbcType=INTEGER},
+		#{residentname,jdbcType=VARCHAR},
 		#{doorid,jdbcType=VARCHAR},
 		#{state,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP})
 	</insert>
@@ -87,14 +90,22 @@
 	<update id="updateByPrimaryKey" parameterType="cn.mao.pojo.Triprecord">
 		update triprecord
 		set residentname = #{residentname,jdbcType=VARCHAR},
-		doorid = #{doorid,jdbcType=VARCHAR},
+		doorid =
+		#{doorid,jdbcType=VARCHAR},
 		state = #{state,jdbcType=VARCHAR},
-		time = #{time,jdbcType=TIMESTAMP}
+		time =
+		#{time,jdbcType=TIMESTAMP}
 		where id = #{id,jdbcType=INTEGER}
 	</update>
 	<select id="selectTriprecordAll" parameterType="java.util.List"
 		resultMap="BaseResultMap">
 		select * from triprecord where id!=""
+	</select>
+
+	<select id="selectTriprecordAllByname" parameterType="java.util.List"
+		resultMap="BaseResultMap">
+		select * from triprecord where residentname=#{residentname}
+		order by id desc
 	</select>
 
 	<select id="selectTriprecordByPage" resultMap="BaseResultMap">

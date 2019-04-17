@@ -27,4 +27,10 @@ public class TriprecordServiceImpl implements TriprecordService {
 		return triprecords;
 	}
 
+	@Override
+	public List<Triprecord> getTriprecordAllByname(String residentname) {
+		List<Triprecord> triprecords = triprecordMapper.selectTriprecordAllByname(residentname);
+		return triprecords;
+	}
+
 }

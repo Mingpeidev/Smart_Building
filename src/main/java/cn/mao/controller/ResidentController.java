@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.mao.Sensorandrfid.Rxtx_Rfid;
 import cn.mao.pojo.Resident;
-import cn.mao.pojo.Sensor;
 import cn.mao.service.ResidentService;
 
 @Controller
@@ -31,6 +30,7 @@ public class ResidentController {
 	@ResponseBody
 	public Map<String, Object> addResident(String residentname, String doorid, String sex) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		System.out.println("添加住户门禁信息");
 		if (residentname.length() < 2 || doorid.length() < 8) {
 			map.put("data", "失败，格式出错！");
 		} else {
@@ -56,6 +56,7 @@ public class ResidentController {
 	@ResponseBody
 	public Map<String, Object> getResidentList(int page, int limit) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		System.out.println("获取住户门禁信息表");
 
 		List<Resident> list = residentService.getResidentByPage((page - 1) * limit, limit);
 		List<Resident> residents = residentService.getResidentAll();
@@ -86,7 +87,7 @@ public class ResidentController {
 		Rxtx_Rfid.sendMsg("0200000446529C03");
 
 		String ID = Rxtx_Rfid.getID();
-		System.out.println(ID);
+		System.out.println("获取卡号：" + ID);
 		if (!ID.equals("")) {
 			map.put("ID", ID);
 		} else {
@@ -109,6 +110,8 @@ public class ResidentController {
 	@ResponseBody
 	public Map<String, Object> editResidentInfo(Integer id, String residentname, String doorid, String sex) {
 		Map<String, Object> map = new HashMap<String, Object>();
+
+		System.out.println("修改住户门禁信息");
 
 		if (residentname.length() < 2 || doorid.length() < 8) {
 			map.put("data", "修改失败，格式出错！");
@@ -138,6 +141,8 @@ public class ResidentController {
 	@ResponseBody
 	public Map<String, Object> deleteResidentInfo(Integer id) {
 		Map<String, Object> map = new HashMap<String, Object>();
+
+		System.out.println("删除住户门禁信息");
 
 		residentService.deleteResidentInfo(id);
 
