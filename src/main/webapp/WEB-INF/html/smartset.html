@@ -13,7 +13,7 @@
 			<div class="layui-card">
 				<div class="layui-card-header">表单</div>
 				<form class="layui-form layui-card-body" action="javascript:;"
-					method="post">
+					method="post" lay-filter="first">
 					<div class="layui-form-item">
 						<label class="layui-form-label">室温设置</label>
 						<div class="layui-input-inline"
@@ -49,7 +49,8 @@
 						<label class="layui-form-label">自动开灯时间</label>
 						<div class="layui-input-inline"
 							style="width:100px;text-align: center;">
-							<input type="text" class="layui-input" id="timepick">
+							<input type="text" autocomplete="off" class="layui-input"
+								id="timepick" name="timepick">
 						</div>
 					</div>
 
@@ -57,14 +58,14 @@
 						<label class="layui-form-label">智能设置开关</label>
 						<div class="layui-input-inline"
 							style="width:100px;text-align: center;">
-							<input type="checkbox" name="switch" lay-skin="switch"
-								lay-filter="switchTest" lay-text="ON|OFF" id="on_off">
+							<input type="checkbox" name="on_off" lay-skin="switch"
+								lay-text="ON|OFF" id="on_off">
 						</div>
 					</div>
 					<div class="layui-form-item">
 						<div class="layui-input-block">
 							<button class="layui-btn layui-btn-blue" lay-submit
-								lay-filter="formDemo" onclick="sureBtn_click()">确定</button>
+								lay-filter="sureBtn">确定</button>
 							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 						</div>
 					</div>
@@ -72,29 +73,48 @@
 			</div>
 		</div>
 	</div>
-	<script src="../assets/layui.all.js"></script>
+	<script src="../assets/layui.js"></script>
 	<script>
-		var form = layui.form,
-			layer = layui.layer,
-			laydate = layui.laydate;
+	
 		var time,
 			hour,
 			minute;
 		var timelist = [];
+		layui.use([ 'layer', 'form', 'laydate' ], function() {
+			var form = layui.form,
+				layer = layui.layer,
+				laydate = layui.laydate;
 	
-		laydate.render({
-			elem : '#timepick',
-			type : 'time',
-			format : 'HH:mm',
-			btns : [ 'clear', 'confirm' ],
-			done : function(value, date, endDate) {
-				time = value;
-				timelist = value.split(":"); //分割小时和分钟
+			//按钮Btn1提交监听，添加住户信息
+			form.on('submit(sureBtn)', function(data) {
+				console.log(data)
+				
+				return false;
+			});
+			
+			//初始赋值
+					form.val('first', {
+						'temp' : "2",
+						'timepick' :"12:00" ,
+						'on_off' : true,
+					});
 	
-				hour = timelist[0];
-				minute = timelist[1];
-			}
-		});
+			laydate.render({
+				elem : '#timepick',
+				type : 'time',
+				format : 'HH:mm',
+				btns : [ 'clear', 'confirm' ],
+				done : function(value, date, endDate) {
+					time = value;
+					timelist = value.split(":"); //分割小时和分钟
+	
+					hour = timelist[0];
+					minute = timelist[1];
+				}
+			});
+	
+	
+		})
 	</script>
 	<script type="text/javascript">
 		function sureBtn_click() {
@@ -103,7 +123,8 @@
 			var temp = myselect.options[index].text; //拿到选中项options的text;text用value替代可以拿到value
 	
 			var on_off = document.getElementById("on_off").checked;
-			alert("温度：" + temp + "  时间：" + hour + ":" + minute + "  开关：" + on_off)
+	
+			layer.msg("温度：" + temp + "  时间：" + hour + ":" + minute + "  开关：" + on_off)
 		}
 	</script>
 </body>

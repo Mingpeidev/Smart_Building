@@ -34,7 +34,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	String alarm_control = "";
 	String door_control = "";
 
-	private int Swendu = 26;
+	private int Stemp = 26;
 	private int Smart = 0;
 
 	private static final String DEMONAME = "串口测试";
@@ -55,9 +55,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		Rxtx_sensor test1 = new Rxtx_sensor();
 		test1.init();
 		System.out.println("主函数");
-
-		MaplayoutThread map1 = test1.new MaplayoutThread();
-		map1.start();
 
 		// test1.closeSerialPort();
 	}
@@ -189,6 +186,14 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		Smart = smart;
 	}
 
+	public int getSwendu() {
+		return Stemp;
+	}
+
+	public void setSwendu(int temp) {
+		Stemp = temp;
+	}
+
 	/**
 	 * 读取串口返回信息，并定义其长度,主要用这个进行数据库和智能控制
 	 */
@@ -267,32 +272,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		air_control = water;
 	}
 
-	class MaplayoutThread extends Thread {
-		@Override
-		public void run() {
-
-			// 2.从容器中获取mapper
-
-			while (true) {
-				try {
-					sleep(3000);
-					Set<String> keySet = dataAll.keySet();
-					Iterator<String> it1 = keySet.iterator();
-					while (it1.hasNext()) {
-						String ID = it1.next();
-						System.out.println("哈哈哈：" + ID + " " + dataAll.get(ID));
-					}
-
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-			}
-
-		}
-	}
-
-	public void ErrorControl() {
+	public void SmartControl() {
 
 		String control = "";
 		control = dataAll.get("00 A0 01");
@@ -318,20 +298,25 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			String t = handler[1] + handler[0];
 			float wendu = (float) (Integer.parseInt(t, 16) / 100.00);
 
-			if (wendu > Swendu && door_control.equals("1")) {
+			if (wendu > Stemp && door_control.equals("1")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + alarm_control + "0"));
-			} else if (wendu < Swendu && door_control.equals("0")) {
+			} else if (wendu < Stemp && door_control.equals("0")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + alarm_control + "1"));
 			}
 		}
 	}
 
-	public int getSwendu() {
-		return Swendu;
-	}
-
-	public void setSwendu(int swendu) {
-		Swendu = swendu;
+	/**
+	 * 判断是否连接串口
+	 * 
+	 * @return
+	 */
+	public static String judgelink() {
+		if (serialPort != null) {
+			return "link";
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -362,19 +347,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			serialPort.close();
 			serialPort = null;
 			System.out.println("已关闭端口！");
-		}
-	}
-
-	/**
-	 * 判断是否连接串口
-	 * 
-	 * @return
-	 */
-	public static String judgelink() {
-		if (serialPort != null) {
-			return "link";
-		} else {
-			return null;
 		}
 	}
 }
