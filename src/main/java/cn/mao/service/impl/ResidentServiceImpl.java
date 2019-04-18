@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import cn.mao.dao.ResidentMapper;
 import cn.mao.pojo.Resident;
-import cn.mao.pojo.Sensor;
 import cn.mao.service.ResidentService;
 
 @Service
@@ -47,6 +46,12 @@ public class ResidentServiceImpl implements ResidentService {
 		List<Resident> residents = residentMapper.selectResidentByPage(page, limit);
 
 		return residents;
+	}
+
+	@Override
+	public Resident getResidentByDoorid(String doorid) {
+		Resident resident = residentMapper.selectByDoorid(doorid);
+		return resident;
 	}
 
 }

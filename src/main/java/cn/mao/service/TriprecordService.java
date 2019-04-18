@@ -2,6 +2,8 @@ package cn.mao.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import cn.mao.pojo.Triprecord;
 
 public interface TriprecordService {
@@ -28,5 +30,20 @@ public interface TriprecordService {
 	 * @return
 	 */
 	public List<Triprecord> getTriprecordAllByname(String residentname);
+
+	/**
+	 * 添加出行记录
+	 * 
+	 * @param triprecord
+	 */
+	public void addTriprecord(Triprecord triprecord);
+
+	/**
+	 * 查询最新一条出行记录
+	 * 
+	 * @param doorid
+	 * @return
+	 */
+	public Triprecord getTriprecordByDoorid(String doorid);
 
 }

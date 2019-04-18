@@ -9,7 +9,7 @@ import cn.mao.pojo.Triprecord;
 public interface TriprecordMapper {
 	int deleteByPrimaryKey(Integer id);
 
-	int insert(Triprecord record);
+	int insert(Triprecord triprecord);
 
 	int insertSelective(Triprecord record);
 
@@ -24,4 +24,6 @@ public interface TriprecordMapper {
 	List<Triprecord> selectTriprecordAllByname(@Param("residentname") String residentname);
 
 	List<Triprecord> selectTriprecordByPage(@Param("page") int page, @Param("limit") int limit);
+
+	Triprecord selectByDoorid(@Param("doorid") String doorid);
 }

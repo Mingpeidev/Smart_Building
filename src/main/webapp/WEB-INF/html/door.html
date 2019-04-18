@@ -42,8 +42,7 @@
 
 				<div style="margin-top:100px;margin-left:70px"
 					class="layui-btn-container">
-					<button type="button" class="layui-btn"
-						onclick="setInterval_searchcard()">寻卡</button>
+					<button type="button" class="layui-btn" onclick="searchcard()">寻卡</button>
 					<button name="Btn1" class="layui-btn" lay-submit lay-filter="*">添加</button>
 					<button name="Btn2" class="layui-btn" lay-submit lay-filter="**">修改</button>
 					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -139,8 +138,12 @@
 				//console.log(this); //当前Tab标题所在的原始DOM元素
 				console.log(data.index); //得到当前Tab的所在下标
 				//console.log(data.elem); //得到当前的Tab大容器
-				getMap();
-				getrecordMap();
+				if (data.index == "0") {
+					setInterval_searchcard();
+					getrecordMap();
+				} else {
+					getMap();
+				}
 			});
 	
 			//按钮Btn1提交监听，添加住户信息
@@ -161,7 +164,6 @@
 						if (map.data == "写入成功") {
 							layer.close(index1) //关闭弹窗
 							getMap();
-							clearInterval(interval);
 						}
 					}
 				})
@@ -185,7 +187,6 @@
 						layer.msg(map.data);
 						layer.close(index2) //关闭弹窗
 						getMap();
-						clearInterval(interval);
 					}
 				})
 				return false;
@@ -288,6 +289,14 @@
 			}
 			getrecordMap();
 	
+			var interval2;
+			clearInterval(interval2);
+			interval2 = setInterval(function() {
+				getrecordMap();
+				console.log(table.cache.triprecordtable[0].residentname) //显示最新人员出入情况
+				document.getElementById("welcome_text").innerHTML = table.cache.triprecordtable[0].residentname + ":" + table.cache.triprecordtable[0].state;
+			}, 10000);
+	
 			//监听头工具栏事件
 			table.on('toolbar(test)', function(obj) {
 				switch (obj.event) {
@@ -297,7 +306,11 @@
 						type : 1,
 						skin : 'layui-layer-rim',
 						area : [ '400px', '450px' ],
-						content : $('#test1111')
+						content : $('#test1111'),
+						shadeClose : true, //点击遮罩关闭
+						end : function() {
+							setInterval_searchcard();
+						}
 					});
 					document.all["Btn1"].style.display = "inline";
 					document.all["Btn2"].style.display = "none";
@@ -308,6 +321,7 @@
 						'doorid' : "",
 						'sex' : "男",
 					});
+					clearInterval(interval);
 	
 					break;
 				}
@@ -324,7 +338,11 @@
 						type : 1,
 						skin : 'layui-layer-rim',
 						area : [ '400px', '450px' ],
-						content : $('#test1111')
+						content : $('#test1111'),
+						shadeClose : true, //点击遮罩关闭
+						end : function() {
+							setInterval_searchcard();
+						}
 					});
 					document.all["Btn1"].style.display = "none";
 					document.all["Btn2"].style.display = "inline";
@@ -335,6 +353,7 @@
 						'doorid' : tabledata.doorid,
 						'sex' : tabledata.sex,
 					});
+					clearInterval(interval);
 	
 					break;
 				case "del":
@@ -367,8 +386,10 @@
 		var interval;
 		function setInterval_searchcard() {
 			clearInterval(interval);
-			interval = setInterval("searchcard()", 1000)
+			interval = setInterval("searchcard()", 2000)
 		}
+		setInterval_searchcard();
+	
 		function searchcard() {
 			$.ajax({
 				type : 'POST',

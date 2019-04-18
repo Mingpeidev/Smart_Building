@@ -4,11 +4,22 @@ import gnu.io.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.TooManyListenersException;
+
+import cn.mao.pojo.Resident;
+import cn.mao.pojo.Triprecord;
+import cn.mao.service.ResidentService;
+import cn.mao.service.TriprecordService;
+import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.CharFormatUtil;
 
 @SuppressWarnings("restriction")
 public class Rxtx_Rfid implements SerialPortEventListener {
+
+	private TriprecordService triprecordService;
+	private ResidentService residentService;
 
 	private static final String DEMONAME = "RFID串口";
 
@@ -20,8 +31,8 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 
 	// RS-232的串行口
 	private static SerialPort serialPort;
-	
-	private static String ID="";
+
+	private static String ID = "";
 
 	public static void main(String[] args) {
 
@@ -34,8 +45,8 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 
 		// test1.closeSerialPort();
 	}
-	
-	public static String getID(){
+
+	public static String getID() {
 		return ID;
 	}
 
@@ -134,8 +145,11 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 				if (x == 12) {
 					ID = handler[6] + handler[7] + handler[8] + handler[9];
 					System.out.println("防冲突成功。卡号：" + ID);
+
+					addRecord(ID);// 添加出行信息
+
 				} else {
-					ID="";
+					ID = "";
 					System.out.println("fail");
 				}
 				break;
@@ -209,5 +223,70 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * 添加出行记录到数据库
+	 * 
+	 * @param doorid
+	 */
+	public void addRecord(String doorid) {
+		triprecordService = ApplicationContextHelper.getBean(TriprecordService.class);
+		residentService = ApplicationContextHelper.getBean(ResidentService.class);
+
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		long nowtime = timestamp.getTime();
+
+		// 查询出行记录表doorid状态
+		Triprecord triprecordold = triprecordService.getTriprecordByDoorid(doorid);
+
+		Triprecord triprecordnew = new Triprecord();
+
+		// 查询是否有doorid
+		Resident resident = residentService.getResidentByDoorid(doorid);
+
+		if (triprecordold == null) {
+			if (resident == null) {
+				System.out.println("没有此住户，请录入住户信息");
+			} else {
+				triprecordnew.setResidentname(resident.getResidentname());
+				triprecordnew.setDoorid(resident.getDoorid());
+				triprecordnew.setState("在家");
+				triprecordnew.setTime(timestamp);
+			}
+
+		} else {
+
+			/*
+			 * SimpleDateFormat sdf = new SimpleDateFormat(
+			 * "EEE MMM dd HH:mm:ss z yyyy", java.util.Locale.US); try { Date
+			 * date = sdf.parse(String.valueOf(triprecordold.getTime())); Date
+			 * value=new Timestamp(triprecordold.getTime().getTime());
+			 * System.out.println(date+"@"+value+"@"+triprecordold.getTime()+"@"
+			 * ); } catch (ParseException e) { e.printStackTrace(); }
+			 */
+			Date oldDate = new Timestamp(triprecordold.getTime().getTime());
+			long oldtime = oldDate.getTime();
+
+			System.out.println(nowtime - oldtime);
+
+			if ((nowtime - oldtime) / 1000 < 10) {
+				System.out.println("此时间段禁止读卡！");
+			} else {
+				triprecordnew.setResidentname(triprecordold.getResidentname());
+				triprecordnew.setDoorid(triprecordold.getDoorid());
+				if (triprecordold.getState().equals("在家")) {
+					triprecordnew.setState("外出");
+				} else {
+					triprecordnew.setState("在家");
+				}
+				triprecordnew.setTime(timestamp);
+			}
+		}
+		// 添加新出行记录
+		triprecordService.addTriprecord(triprecordnew);
+
+		System.out.println("添加出行记录成功" + doorid);
+
 	}
 }

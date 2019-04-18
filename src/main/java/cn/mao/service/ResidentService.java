@@ -41,4 +41,6 @@ public interface ResidentService {
 	 */
 	void deleteResidentInfo(Integer id);
 
+	public Resident getResidentByDoorid(String doorid);
+
 }

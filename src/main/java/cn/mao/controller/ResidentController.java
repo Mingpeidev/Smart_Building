@@ -81,17 +81,22 @@ public class ResidentController {
 	public Map<String, Object> searchcard() {
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		Rxtx_Rfid rfid = new Rxtx_Rfid();
-		rfid.init();
+		if (Rxtx_Rfid.judgelink() != null) {
 
-		Rxtx_Rfid.sendMsg("0200000446529C03");
+			Rxtx_Rfid.sendMsg("0200000446529C03");
 
-		String ID = Rxtx_Rfid.getID();
-		System.out.println("获取卡号：" + ID);
-		if (!ID.equals("")) {
-			map.put("ID", ID);
-		} else {
-			map.put("ID", "fail");
+			try {
+				Thread.sleep(1000);// 延时执行获取卡号操作
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			String ID = Rxtx_Rfid.getID();
+			System.out.println("获取卡号：" + ID);
+			if (!ID.equals("")) {
+				map.put("ID", ID);
+			} else {
+				map.put("ID", "fail");
+			}
 		}
 
 		return map;

@@ -33,4 +33,16 @@ public class TriprecordServiceImpl implements TriprecordService {
 		return triprecords;
 	}
 
+	@Override
+	public void addTriprecord(Triprecord triprecord) {
+
+		triprecordMapper.insert(triprecord);
+	}
+
+	@Override
+	public Triprecord getTriprecordByDoorid(String doorid) {
+		Triprecord triprecord = triprecordMapper.selectByDoorid(doorid);
+		return triprecord;
+	}
+
 }

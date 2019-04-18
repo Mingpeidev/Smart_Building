@@ -113,4 +113,10 @@
 		triprecord
 		order by id desc limit #{page},#{limit}
 	</select>
+
+	<select id="selectByDoorid" parameterType="String" resultMap="BaseResultMap">
+		select * from triprecord where doorid=#{doorid}
+		order by id desc limit
+		0,1
+	</select>
 </mapper>

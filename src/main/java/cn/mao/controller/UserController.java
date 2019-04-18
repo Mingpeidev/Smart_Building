@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import cn.mao.pojo.User;
 import cn.mao.service.UserService;
+import cn.mao.Sensorandrfid.Rxtx_Rfid;
 import cn.mao.Sensorandrfid.Rxtx_sensor;
 import cn.mao.util.SsmResult;
 
@@ -39,7 +40,7 @@ public class UserController {
 	public String login() {
 
 		if (Rxtx_sensor.judgelink() == null) {
-			System.out.println("尝试连接！电脑");
+			System.out.println("开启传感器串口！电脑");
 			new Rxtx_sensor().init();
 		}
 
@@ -83,6 +84,11 @@ public class UserController {
 	 */
 	@RequestMapping("/door")
 	public String door() {
+		if (Rxtx_Rfid.judgelink() == null) {
+			System.out.println("开启rfid串口");
+			Rxtx_Rfid rfid = new Rxtx_Rfid();
+			rfid.init();
+		}
 		return "door";
 	}
 
