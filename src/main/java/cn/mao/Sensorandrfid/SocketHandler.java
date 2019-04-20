@@ -18,7 +18,7 @@ public class SocketHandler extends IoHandlerAdapter {
 
 	private Timer timer;
 
-	private int smart = 0;
+	private String smart = "";
 	private int water;
 	private int wendu;
 	private int o2;
@@ -47,7 +47,7 @@ public class SocketHandler extends IoHandlerAdapter {
 
 			JSONObject json = new JSONObject(message.toString());
 
-			smart = json.getInt("smart");
+			smart = json.getString("smart");
 			wendu = json.getInt("watertemp");
 			water = json.getInt("watertime");
 			o2 = json.getInt("o2");
@@ -55,7 +55,7 @@ public class SocketHandler extends IoHandlerAdapter {
 			System.out.println("getJson数据>" + json.getInt("id") + json.getInt("smart") + json.getInt("watertemp")
 					+ json.getInt("watertime") + json.getInt("o2"));
 
-			if (smart == 1) {
+			if (smart == "on") {
 
 				timer = new Timer();
 

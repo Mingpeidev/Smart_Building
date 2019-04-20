@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,7 +14,9 @@ import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 import cn.mao.pojo.Sensor;
+import cn.mao.pojo.Setting;
 import cn.mao.service.SensorService;
+import cn.mao.service.SettingService;
 import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.CharFormatUtil;
 import cn.mao.util.ScheduleUtil;
@@ -21,21 +25,26 @@ import cn.mao.util.ScheduleUtil;
 public class Rxtx_sensor implements SerialPortEventListener {
 
 	private SensorService sensorService;
+	private SettingService settingService;
 
-	private String temp = "";
+	private String temp = "";// 传感器数据十六进制
 	private String humi = "";
 	private String light = "";
 	private String human = "";
 	private String smoke = "";
 	private String control = "";
 
-	String lamp_control = "";
+	String lamp_control = "";// 控制二进制字节
 	String air_control = "";
 	String alarm_control = "";
 	String door_control = "";
 
-	private int Stemp = 26;
-	private int Smart = 0;
+	private int Stemp = 26;// 设置的阈值
+	private int Shumi = 50;
+	private Integer Slight = null;
+	private String Stimeon;
+	private String Stimeoff;
+	private String Smart = "";
 
 	private static final String DEMONAME = "串口测试";
 
@@ -64,21 +73,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		@Override
 		public void run() {
 
-			// 读取dataAll
-			Set<String> keySet = dataAll.keySet();
-			Iterator<String> it1 = keySet.iterator();
-			while (it1.hasNext()) {
-				String ID = it1.next();
-				if (ID.equals("8B 55 01")) {
-					temp = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("8B 55 02")) {
-					humi = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("E9 4E 01")) {
-					light = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				}
-			}
-
-			sensorService = ApplicationContextHelper.getBean(SensorService.class);
+			sensorService = ApplicationContextHelper.getBean(SensorService.class);// 写入传感器数据到数据库
 			Sensor sensor = new Sensor();
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -92,11 +87,50 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			sensorService.insertSensor(sensor);
 			System.out.println("写入数据库" + timestamp);
 
+			settingService = ApplicationContextHelper.getBean(SettingService.class);// 获取数据库设置信息
+			SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");// 指定类型
+
+			Setting setting = settingService.selectSetting(1);
+
+			Stemp = setting.getTemp();// 初始化阈值
+			Shumi = setting.getHumi();
+			Slight = setting.getLight();
+			Stimeon = sdfTime.format(setting.getTimeon());// sqltime转为date指定类型
+			Stimeoff = sdfTime.format(setting.getTimeoff());// sqltime转为date指定类型
+			Smart = setting.getSmart();
+
 		}
 
 		@Override
 		public String getName() {
 			return "insertsensor";
+		}
+	};
+
+	// 温湿度、光照写入进程
+	ScheduleUtil.SRunnable smartRunnable = new ScheduleUtil.SRunnable() {
+		@Override
+		public void run() {
+
+			settingService = ApplicationContextHelper.getBean(SettingService.class);// 获取数据库设置信息
+			SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");// 指定类型
+
+			Setting setting = settingService.selectSetting(1);
+
+			Stemp = setting.getTemp();// 初始化阈值
+			Shumi = setting.getHumi();
+			Slight = setting.getLight();
+			Stimeon = sdfTime.format(setting.getTimeon());// sqltime转为date指定类型
+			Stimeoff = sdfTime.format(setting.getTimeoff());// sqltime转为date指定类型
+			Smart = setting.getSmart();
+
+			SmartControl();
+
+		}
+
+		@Override
+		public String getName() {
+			return "smartRunnable";
 		}
 	};
 
@@ -121,12 +155,28 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
+			// 读取dataAll
+			Set<String> keySet = dataAll.keySet();
+			Iterator<String> it1 = keySet.iterator();
+			while (it1.hasNext()) {
+				String ID = it1.next();
+				if (ID.equals("8B 55 01")) {
+					temp = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("8B 55 02")) {
+					humi = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("E9 4E 01")) {
+					light = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				}
+			}
+
 			if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
 				ScheduleUtil.stard(insertsensorRunnable, 20, 20, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
 				System.out.println("开启进程");
 			}
-
-			// ErrorControl();
+			if (!ScheduleUtil.isAlive(smartRunnable) && serialPort != null) {
+				ScheduleUtil.stard(smartRunnable, 20, 20, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
+				System.out.println("开启smart进程");
+			}
 
 			break;
 
@@ -178,11 +228,11 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		}
 	}
 
-	public int getSmart() {
+	public String getSmart() {
 		return Smart;
 	}
 
-	public void setSmart(int smart) {
+	public void setSmart(String smart) {
 		Smart = smart;
 	}
 
@@ -272,37 +322,83 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		air_control = water;
 	}
 
+	/**
+	 * 智能控制
+	 */
 	public void SmartControl() {
 
+		Calendar Scalendaron = Calendar.getInstance();// 设置数据库timeon阈值时间
+		Scalendaron.setTimeInMillis(System.currentTimeMillis());
+
+		Scalendaron.set(Calendar.HOUR_OF_DAY, Integer.valueOf(Stimeon.substring(0, 2)));
+		Scalendaron.set(Calendar.MINUTE, Integer.valueOf(Stimeon.substring(3, 5)));
+		Scalendaron.set(Calendar.SECOND, 0);
+		Scalendaron.set(Calendar.MILLISECOND, 0);
+
+		Calendar Scalendaroff = Calendar.getInstance();// 设置数据库timeoff阈值时间
+		Scalendaroff.setTimeInMillis(System.currentTimeMillis());
+
+		Scalendaroff.set(Calendar.HOUR_OF_DAY, Integer.valueOf(Stimeoff.substring(0, 2)));
+		Scalendaroff.set(Calendar.MINUTE, Integer.valueOf(Stimeoff.substring(3, 5)));
+		Scalendaroff.set(Calendar.SECOND, 0);
+		Scalendaroff.set(Calendar.MILLISECOND, 0);
+
+		Calendar calendar = Calendar.getInstance();// 现在系统时间
+		calendar.setTimeInMillis(System.currentTimeMillis());
+
 		String control = "";
-		control = dataAll.get("00 A0 01");
+		control = dataAll.get("14 24 01");
 
 		String x = CharFormatUtil.hexString2binaryString(control);
 
-		lamp_control = x.substring(4, 5);
+		lamp_control = x.substring(4, 5);// 初始化控制信息
 		air_control = x.substring(5, 6);
 		alarm_control = x.substring(6, 7);
 		door_control = x.substring(7, 8);
-		if (Smart == 1) {
-			if (dataAll.get("EE 61 01").equals("01") && air_control.equals("1")) {
+
+		System.out.println(Double.valueOf(temp) + "@" + "@" + Stemp + "@" + Shumi + "@" + Slight + "@" + Stimeon + "@"
+				+ Stimeoff + "@" + Smart);
+
+		if (Smart.equals("on")) {
+			System.out.println("哈哈哈哈");
+
+			// 温度自控
+			if (Double.valueOf(temp) > Stemp && air_control.equals("1")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + "0" + alarm_control + door_control));
+			} else if (Double.valueOf(temp) < Stemp && air_control.equals("0")) {
+				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + "1" + alarm_control + door_control));
 			}
-			/*
-			 * else if (dataAll.get("EE 61 01").equals("00") &&
-			 * water_control.equals("0")) { sendMsg("0" +
-			 * binaryString2hexString(light_control + "1" + addo2_control +
-			 * heating_control)); }
-			 */
 
-			String[] handler = dataAll.get("47 8C 01").split(" ");
-			String t = handler[1] + handler[0];
-			float wendu = (float) (Integer.parseInt(t, 16) / 100.00);
-
-			if (wendu > Stemp && door_control.equals("1")) {
-				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + alarm_control + "0"));
-			} else if (wendu < Stemp && door_control.equals("0")) {
-				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + alarm_control + "1"));
+			// 湿度自控
+			if (Double.valueOf(humi) > Shumi && alarm_control.equals("1")) {
+				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + "0" + door_control));
+			} else if (Double.valueOf(humi) < Shumi && alarm_control.equals("0")) {
+				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + "1" + door_control));
 			}
+
+			// 灯智能控制
+			if (Slight == null) {
+
+				// 时间控制
+				if (calendar.getTimeInMillis() < Scalendaron.getTimeInMillis()
+						&& calendar.getTimeInMillis() > Scalendaroff.getTimeInMillis() && lamp_control.equals("1")) {
+					sendMsg("0"
+							+ CharFormatUtil.binaryString2hexString("0" + air_control + alarm_control + door_control));
+				} else {
+					sendMsg("0"
+							+ CharFormatUtil.binaryString2hexString("1" + air_control + alarm_control + door_control));
+				}
+
+			} else {// 光照阈值控制
+				if (Double.valueOf(light) > Slight && lamp_control.equals("1")) {
+					sendMsg("0"
+							+ CharFormatUtil.binaryString2hexString("0" + air_control + alarm_control + door_control));
+				} else if (Double.valueOf(light) < Slight && lamp_control.equals("0")) {
+					sendMsg("0"
+							+ CharFormatUtil.binaryString2hexString("1" + air_control + alarm_control + door_control));
+				}
+			}
+
 		}
 	}
 

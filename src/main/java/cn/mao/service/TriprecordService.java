@@ -2,8 +2,6 @@ package cn.mao.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import cn.mao.pojo.Triprecord;
 
 public interface TriprecordService {

@@ -6,6 +6,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 周期执行线程工具类
+ * 
+ * @author 毛明培
+ *
+ */
 public class ScheduleUtil {
 	/* 该接口定义了线程的名字，用于管理，如判断是否存活，是否停止该线程等等 */
 	public interface SRunnable extends Runnable {
