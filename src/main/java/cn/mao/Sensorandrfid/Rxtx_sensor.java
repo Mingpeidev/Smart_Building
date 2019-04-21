@@ -30,9 +30,9 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	private String temp = "";// 传感器数据十六进制
 	private String humi = "";
 	private String light = "";
-	private String human = "";
-	private String smoke = "";
-	private String control = "";
+	// private String human = "";
+	// private String smoke = "";
+	// private String control = "";
 
 	String lamp_control = "";// 控制二进制字节
 	String air_control = "";
@@ -68,18 +68,36 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		// test1.closeSerialPort();
 	}
 
-	// 温湿度、光照写入进程
+	// 温湿度、光照等传感器数据写入线程
 	ScheduleUtil.SRunnable insertsensorRunnable = new ScheduleUtil.SRunnable() {
 		@Override
 		public void run() {
+
+			String temp1 = "";
+			String humi1 = "";
+			String light1 = "";
+
+			// 读取dataAll传感器数据
+			Set<String> keySet = dataAll.keySet();
+			Iterator<String> it1 = keySet.iterator();
+			while (it1.hasNext()) {
+				String ID = it1.next();
+				if (ID.equals("8B 55 01")) {
+					temp1 = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("8B 55 02")) {
+					humi1 = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("E9 4E 01")) {
+					light1 = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				}
+			}
 
 			sensorService = ApplicationContextHelper.getBean(SensorService.class);// 写入传感器数据到数据库
 			Sensor sensor = new Sensor();
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-			sensor.setTemp(temp);
-			sensor.setHumi(humi);
-			sensor.setLight(light);
+			sensor.setTemp(temp1);
+			sensor.setHumi(humi1);
+			sensor.setLight(light1);
 			sensor.setHuman("0");
 			sensor.setSmoke("0");
 			sensor.setTime(timestamp);
@@ -107,10 +125,24 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		}
 	};
 
-	// 温湿度、光照写入进程
+	// 智能阈值控制线程
 	ScheduleUtil.SRunnable smartRunnable = new ScheduleUtil.SRunnable() {
 		@Override
 		public void run() {
+
+			// 读取dataAll传感器数据
+			Set<String> keySet = dataAll.keySet();
+			Iterator<String> it1 = keySet.iterator();
+			while (it1.hasNext()) {
+				String ID = it1.next();
+				if (ID.equals("8B 55 01")) {
+					temp = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("8B 55 02")) {
+					humi = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("E9 4E 01")) {
+					light = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				}
+			}
 
 			settingService = ApplicationContextHelper.getBean(SettingService.class);// 获取数据库设置信息
 			SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");// 指定类型
@@ -155,27 +187,14 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			// 读取dataAll
-			Set<String> keySet = dataAll.keySet();
-			Iterator<String> it1 = keySet.iterator();
-			while (it1.hasNext()) {
-				String ID = it1.next();
-				if (ID.equals("8B 55 01")) {
-					temp = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("8B 55 02")) {
-					humi = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("E9 4E 01")) {
-					light = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				}
+			if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
+				ScheduleUtil.stard(insertsensorRunnable, 20, 20, TimeUnit.SECONDS);// 每20s写入一次传感器数据到数据库
+				System.out.println("开启传感器写入进程");
 			}
 
-			if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
-				ScheduleUtil.stard(insertsensorRunnable, 20, 20, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
-				System.out.println("开启进程");
-			}
 			if (!ScheduleUtil.isAlive(smartRunnable) && serialPort != null) {
-				ScheduleUtil.stard(smartRunnable, 20, 20, TimeUnit.SECONDS);// 每10s写入一次传感器数据到数据库
-				System.out.println("开启smart进程");
+				ScheduleUtil.stard(smartRunnable, 10, 10, TimeUnit.SECONDS);// 每10s读取数据库与传感器信息并按设定的阈值运行
+				System.out.println("开启智能控制进程");
 			}
 
 			break;
@@ -183,65 +202,6 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		default:
 			break;
 		}
-	}
-
-	/**
-	 * 初始化串口
-	 * 
-	 * @param baudRate
-	 *            波特率
-	 */
-
-	public void init() {
-		if (serialPort != null) {
-			closeSerialPort();
-			System.out.println("端口被占用，先关闭串口，再连接！");
-		}
-		try {
-			portId = CommPortIdentifier.getPortIdentifier("COM3");
-			System.out.println("打开端口：" + portId.getName());
-			serialPort = (SerialPort) portId.open(DEMONAME, 2000);
-			// 设置串口监听
-			serialPort.addEventListener(this);
-			// 设置开启监听
-			serialPort.notifyOnDataAvailable(true);
-			// 设置波特率、数据位、停止位、检验位
-			serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-					SerialPort.PARITY_NONE);
-			// 获取输入流
-			inputStream = serialPort.getInputStream();
-			outputStream = serialPort.getOutputStream();
-		} catch (PortInUseException e) {
-			System.out.println("端口被占用");
-			e.printStackTrace();
-		} catch (TooManyListenersException e) {
-			System.out.println("串口监听类数量过多！添加操作失败！");
-			e.printStackTrace();
-		} catch (UnsupportedCommOperationException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("输入出错");
-			e.printStackTrace();
-		} catch (NoSuchPortException e) {
-			System.out.println("没有该端口");
-			e.printStackTrace();
-		}
-	}
-
-	public String getSmart() {
-		return Smart;
-	}
-
-	public void setSmart(String smart) {
-		Smart = smart;
-	}
-
-	public int getSwendu() {
-		return Stemp;
-	}
-
-	public void setSwendu(int temp) {
-		Stemp = temp;
 	}
 
 	/**
@@ -307,23 +267,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		}
 	}
 
-	public void sendO2Msg(String o2) {
-		System.out.println("o2:" + o2);
-		System.out.println("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + o2 + door_control));
-		sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + o2 + door_control));
-		alarm_control = o2;
-	}
-
-	public void sendWaterMsg(String water) {
-		System.out.println("water:" + water);
-		System.out.println(
-				"0" + CharFormatUtil.binaryString2hexString(lamp_control + water + alarm_control + door_control));
-		sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + water + alarm_control + door_control));
-		air_control = water;
-	}
-
 	/**
-	 * 智能控制
+	 * 阈值智能控制
 	 */
 	public void SmartControl() {
 
@@ -356,24 +301,32 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		alarm_control = x.substring(6, 7);
 		door_control = x.substring(7, 8);
 
-		System.out.println(Double.valueOf(temp) + "@" + "@" + Stemp + "@" + Shumi + "@" + Slight + "@" + Stimeon + "@"
-				+ Stimeoff + "@" + Smart);
+		System.out.println(Double.valueOf(temp) + "@" + Double.valueOf(humi) + "@" + Double.valueOf(light) + "@" + Stemp
+				+ "@" + Shumi + "@" + Slight + "@" + Stimeon + "@" + Stimeoff + "@" + Smart);
 
 		if (Smart.equals("on")) {
-			System.out.println("哈哈哈哈");
+			System.out.println("智能控制方法");
 
 			// 温度自控
 			if (Double.valueOf(temp) > Stemp && air_control.equals("1")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + "0" + alarm_control + door_control));
+				air_control = "0";
+				System.out.println("airoff");
 			} else if (Double.valueOf(temp) < Stemp && air_control.equals("0")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + "1" + alarm_control + door_control));
+				air_control = "1";
+				System.out.println("airon");
 			}
 
 			// 湿度自控
 			if (Double.valueOf(humi) > Shumi && alarm_control.equals("1")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + "0" + door_control));
+				alarm_control = "0";
+				System.out.println("alarmoff");
 			} else if (Double.valueOf(humi) < Shumi && alarm_control.equals("0")) {
 				sendMsg("0" + CharFormatUtil.binaryString2hexString(lamp_control + air_control + "1" + door_control));
+				alarm_control = "1";
+				System.out.println("alarmon");
 			}
 
 			// 灯智能控制
@@ -384,21 +337,73 @@ public class Rxtx_sensor implements SerialPortEventListener {
 						&& calendar.getTimeInMillis() > Scalendaroff.getTimeInMillis() && lamp_control.equals("1")) {
 					sendMsg("0"
 							+ CharFormatUtil.binaryString2hexString("0" + air_control + alarm_control + door_control));
-				} else {
+					lamp_control = "0";
+					System.out.println("lampofft");
+				} else if (calendar.getTimeInMillis() > Scalendaron.getTimeInMillis()
+						&& calendar.getTimeInMillis() < Scalendaroff.getTimeInMillis() && lamp_control.equals("0")) {
 					sendMsg("0"
 							+ CharFormatUtil.binaryString2hexString("1" + air_control + alarm_control + door_control));
+					lamp_control = "1";
+					System.out.println("lampont");
 				}
 
 			} else {// 光照阈值控制
 				if (Double.valueOf(light) > Slight && lamp_control.equals("1")) {
 					sendMsg("0"
 							+ CharFormatUtil.binaryString2hexString("0" + air_control + alarm_control + door_control));
+					lamp_control = "0";
+					System.out.println("lampoff");
 				} else if (Double.valueOf(light) < Slight && lamp_control.equals("0")) {
 					sendMsg("0"
 							+ CharFormatUtil.binaryString2hexString("1" + air_control + alarm_control + door_control));
+					lamp_control = "1";
+					System.out.println("lampon");
 				}
 			}
 
+		}
+	}
+
+	/**
+	 * 初始化串口
+	 * 
+	 * @param baudRate
+	 *            波特率
+	 */
+
+	public void init() {
+		if (serialPort != null) {
+			closeSerialPort();
+			System.out.println("端口被占用，先关闭串口，再连接！");
+		}
+		try {
+			portId = CommPortIdentifier.getPortIdentifier("COM3");
+			System.out.println("打开端口：" + portId.getName());
+			serialPort = (SerialPort) portId.open(DEMONAME, 2000);
+			// 设置串口监听
+			serialPort.addEventListener(this);
+			// 设置开启监听
+			serialPort.notifyOnDataAvailable(true);
+			// 设置波特率、数据位、停止位、检验位
+			serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+					SerialPort.PARITY_NONE);
+			// 获取输入流
+			inputStream = serialPort.getInputStream();
+			outputStream = serialPort.getOutputStream();
+		} catch (PortInUseException e) {
+			System.out.println("端口被占用");
+			e.printStackTrace();
+		} catch (TooManyListenersException e) {
+			System.out.println("串口监听类数量过多！添加操作失败！");
+			e.printStackTrace();
+		} catch (UnsupportedCommOperationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("输入出错");
+			e.printStackTrace();
+		} catch (NoSuchPortException e) {
+			System.out.println("没有该端口");
+			e.printStackTrace();
 		}
 	}
 

@@ -2,8 +2,6 @@ package cn.mao.Sensorandrfid;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -13,10 +11,6 @@ import org.json.JSONObject;
 import cn.mao.Sensorandrfid.Rxtx_sensor;;
 
 public class SocketHandler extends IoHandlerAdapter {
-
-	private Rxtx_sensor testRxtx = new Rxtx_sensor();
-
-	private Timer timer;
 
 	private String smart = "";
 	private int water;
@@ -38,7 +32,7 @@ public class SocketHandler extends IoHandlerAdapter {
 			map1.start();
 		} else if (message.toString().trim().length() == 2) {
 			System.out.println("收到控制------------------------------");
-			testRxtx.sendMsg((String) message);
+			Rxtx_sensor.sendMsg((String) message);
 
 		} else {
 			System.out.println("收到json------------------------------");
@@ -52,28 +46,7 @@ public class SocketHandler extends IoHandlerAdapter {
 			water = json.getInt("watertime");
 			o2 = json.getInt("o2");
 
-			System.out.println("getJson数据>" + json.getInt("id") + json.getInt("smart") + json.getInt("watertemp")
-					+ json.getInt("watertime") + json.getInt("o2"));
-
-			if (smart == "on") {
-
-				timer = new Timer();
-
-				testRxtx.setSwendu(wendu);
-				testRxtx.setSmart(smart);
-				O2TimerTask task = new O2TimerTask();
-				O2_CloseTimerTask task2 = new O2_CloseTimerTask();
-				WaterTimerTask task3 = new WaterTimerTask();
-				Water_CloseTimerTask task4 = new Water_CloseTimerTask();
-				timer.schedule(task, 0, o2);
-				timer.schedule(task2, 10000, o2);
-				timer.schedule(task3, 0, water);
-				timer.schedule(task4, 10000, water);
-
-			} else {
-				testRxtx.setSmart(smart);
-				timer.cancel();
-			}
+			System.out.println(smart + wendu + water + o2);
 		}
 
 	}
@@ -86,7 +59,6 @@ public class SocketHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionClosed(IoSession session) throws Exception {
 		System.out.println("sessionClosed");
-		new Rxtx_sensor().closeSerialPort();
 	}
 
 	@Override
@@ -119,36 +91,36 @@ public class SocketHandler extends IoHandlerAdapter {
 				try {
 					sleep(500);// 100ms
 
-					Set<String> keySet = testRxtx.dataAll.keySet();
+					Set<String> keySet = Rxtx_sensor.dataAll.keySet();
 					Iterator<String> it1 = keySet.iterator();
 					while (it1.hasNext()) {
 						String ID = it1.next();
 						if (ID.equals("EE 61 01")) {
-							session.write("02 07 18 00 F1 " + ID + " " + testRxtx.dataAll.get(ID) + " 11");
+							session.write("02 07 18 00 F1 " + ID + " " + Rxtx_sensor.dataAll.get(ID) + " 11");
 							// System.out.println("输出："+"02 07 18 00 F1 "+ID + "
 							// " +
 							// testRxtx.dataAll.get(ID)+" 11");
 
 						} else if (ID.equals("D7 15 01")) {
-							session.write("02 08 18 00 F1 " + ID + " " + testRxtx.dataAll.get(ID) + " 11");
+							session.write("02 08 18 00 F1 " + ID + " " + Rxtx_sensor.dataAll.get(ID) + " 11");
 							// System.out.println("输出："+"02 08 18 00 F1 "+ID + "
 							// " +
 							// testRxtx.dataAll.get(ID)+" 11");
 
 						} else if (ID.equals("00 A0 01")) {
-							session.write("02 07 18 00 F1 " + ID + " " + testRxtx.dataAll.get(ID) + " 11");
+							session.write("02 07 18 00 F1 " + ID + " " + Rxtx_sensor.dataAll.get(ID) + " 11");
 							// System.out.println("输出："+"02 07 18 00 F1 "+ID + "
 							// " +
 							// testRxtx.dataAll.get(ID)+" 11");
 
 						} else if (ID.equals("47 8C 01")) {
-							session.write("02 07 18 00 F1 " + ID + " " + testRxtx.dataAll.get(ID) + " 11");
+							session.write("02 07 18 00 F1 " + ID + " " + Rxtx_sensor.dataAll.get(ID) + " 11");
 							// System.out.println("输出："+"02 07 18 00 F1 "+ID + "
 							// " +
 							// testRxtx.dataAll.get(ID)+" 11");
 
 						} else if (ID.equals("47 8C 02")) {
-							session.write("02 07 18 00 F1 " + ID + " " + testRxtx.dataAll.get(ID) + " 11");
+							session.write("02 07 18 00 F1 " + ID + " " + Rxtx_sensor.dataAll.get(ID) + " 11");
 							// System.out.println("输出："+"02 07 18 00 F1 "+ID + "
 							// " +
 							// testRxtx.dataAll.get(ID)+" 11");
@@ -167,49 +139,5 @@ public class SocketHandler extends IoHandlerAdapter {
 			}
 
 		}
-	}
-
-	public class O2TimerTask extends TimerTask {
-
-		public void run() {
-
-			O2Smart("1");
-		}
-	}
-
-	public class O2_CloseTimerTask extends TimerTask {
-
-		public void run() {
-
-			O2Smart("0");
-		}
-	}
-
-	public void O2Smart(String x) {
-
-		testRxtx.sendO2Msg(x);
-
-	}
-
-	public class WaterTimerTask extends TimerTask {
-
-		public void run() {
-
-			WaterSmart("1");
-		}
-	}
-
-	public class Water_CloseTimerTask extends TimerTask {
-
-		public void run() {
-
-			WaterSmart("0");
-		}
-	}
-
-	public void WaterSmart(String x) {
-
-		testRxtx.sendWaterMsg(x);
-
 	}
 }
