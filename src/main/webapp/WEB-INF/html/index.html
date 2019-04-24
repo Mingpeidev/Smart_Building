@@ -46,7 +46,9 @@
 						<dd>
 							<a href="modifypsd.html">个人中心</a>
 						</dd>
-
+						<dd>
+							<a href="alarm.html">报警信息<span class="layui-badge" id="alarm">0</span></a>
+						</dd>
 						<dd>
 							<a onclick="replaceExit()">退出</a>
 						</dd>
@@ -119,6 +121,22 @@
 		function replaceExit() {
 			window.location.replace("/Smart_Building/user/outLogin")
 		}
+	</script>
+	<!-- 获取报警信息数量，并显示于徽章 -->
+	<script type="text/javascript">
+		function getAlarmcount() {
+			$.ajax({
+				type : 'POST',
+				url : '/Smart_Building/user/getAlarm',
+				dataType : "json", //返回数据形式为json
+				success : function(map) {
+					document.getElementById('alarm').innerHTML = map.count;
+					console.log(map.count)
+				},
+			});
+		}
+		getAlarmcount();
+		setInterval("getAlarmcount()", 5000);
 	</script>
 </body>
 </html>

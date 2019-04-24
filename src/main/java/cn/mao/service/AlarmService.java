@@ -20,4 +20,11 @@ public interface AlarmService {
 	 */
 	public List<Alarm> getAlarms();
 
+	/**
+	 * 更新处理信息
+	 * 
+	 * @param id
+	 */
+	public String updateAlarm(Integer id);
+
 }

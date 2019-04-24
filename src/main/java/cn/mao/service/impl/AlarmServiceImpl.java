@@ -25,4 +25,17 @@ public class AlarmServiceImpl implements AlarmService {
 		return alarms;
 	}
 
+	@Override
+	public String updateAlarm(Integer id) {
+		Alarm alarm = alarmMapper.selectByPrimaryKey(id);
+
+		if (alarm.getState().equals("未处理")) {
+			alarm.setState("已处理");
+			alarmMapper.updateByPrimaryKey(alarm);
+			return "处理成功";
+		}
+		return "处理失败";
+
+	}
+
 }

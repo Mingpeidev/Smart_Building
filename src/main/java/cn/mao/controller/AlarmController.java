@@ -33,7 +33,24 @@ public class AlarmController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		List<Alarm> alarms = alarmService.getAlarms();
-		map.put("list", alarms);
+		int count = alarms.size();
+
+		map.put("code", 0);
+		map.put("msg", "");
+		map.put("data", alarms);
+		map.put("count", count);
+
+		return map;
+	}
+
+	@RequestMapping("/editAlarm")
+	@ResponseBody
+	public Map<String, Object> editAlarm(Integer id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		String data = alarmService.updateAlarm(id);
+
+		map.put("data", data);
 
 		return map;
 	}

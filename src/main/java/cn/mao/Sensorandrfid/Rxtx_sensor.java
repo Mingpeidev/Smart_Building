@@ -13,8 +13,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
+
+import cn.mao.pojo.Alarm;
 import cn.mao.pojo.Sensor;
 import cn.mao.pojo.Setting;
+import cn.mao.service.AlarmService;
 import cn.mao.service.SensorService;
 import cn.mao.service.SettingService;
 import cn.mao.util.ApplicationContextHelper;
@@ -26,6 +29,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 	private SensorService sensorService;
 	private SettingService settingService;
+	private AlarmService alarmService;
 
 	private String temp = "";// 传感器数据十六进制
 	private String humi = "";
@@ -76,6 +80,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			String temp1 = "";
 			String humi1 = "";
 			String light1 = "";
+			String human1 = "0";
+			String smoke1 = "0";
 
 			// 读取dataAll传感器数据
 			Set<String> keySet = dataAll.keySet();
@@ -98,8 +104,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			sensor.setTemp(temp1);
 			sensor.setHumi(humi1);
 			sensor.setLight(light1);
-			sensor.setHuman("0");
-			sensor.setSmoke("0");
+			sensor.setHuman(human1);
+			sensor.setSmoke(smoke1);
 			sensor.setTime(timestamp);
 
 			sensorService.insertSensor(sensor);
@@ -116,6 +122,20 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			Stimeon = sdfTime.format(setting.getTimeon());// sqltime转为date指定类型
 			Stimeoff = sdfTime.format(setting.getTimeoff());// sqltime转为date指定类型
 			Smart = setting.getSmart();
+
+			alarmService = ApplicationContextHelper.getBean(AlarmService.class);// 添加报警信息到数据库
+			Alarm alarm = new Alarm();
+
+			if (human1.equals("hh")) {
+
+			}
+
+			alarm.setHuman(human1);
+			alarm.setSmoke(smoke1);
+			alarm.setState("ha");
+			alarm.setDate(timestamp);
+
+			alarmService.addAlarmInfo(alarm);
 
 		}
 
