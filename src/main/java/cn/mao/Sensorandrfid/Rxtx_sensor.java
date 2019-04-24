@@ -24,7 +24,6 @@ import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.CharFormatUtil;
 import cn.mao.util.ScheduleUtil;
 
-@SuppressWarnings("restriction")
 public class Rxtx_sensor implements SerialPortEventListener {
 
 	private SensorService sensorService;
@@ -80,20 +79,22 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			String temp1 = "";
 			String humi1 = "";
 			String light1 = "";
-			String human1 = "0";
-			String smoke1 = "0";
+			String human1 = "安全";
+			String smoke1 = "";
 
 			// 读取dataAll传感器数据
 			Set<String> keySet = dataAll.keySet();
 			Iterator<String> it1 = keySet.iterator();
 			while (it1.hasNext()) {
 				String ID = it1.next();
-				if (ID.equals("8B 55 01")) {
+				if (ID.equals("C4 36 01")) {
 					temp1 = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("8B 55 02")) {
+				} else if (ID.equals("C4 36 02")) {
 					humi1 = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("E9 4E 01")) {
+				} else if (ID.equals("04 63 01")) {
 					light1 = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
+				} else if (ID.equals("9F 21 01")) {
+					smoke1 = dataAll.get(ID);
 				}
 			}
 
@@ -111,28 +112,16 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			sensorService.insertSensor(sensor);
 			System.out.println("写入数据库" + timestamp);
 
-			settingService = ApplicationContextHelper.getBean(SettingService.class);// 获取数据库设置信息
-			SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");// 指定类型
-
-			Setting setting = settingService.selectSetting(1);
-
-			Stemp = setting.getTemp();// 初始化阈值
-			Shumi = setting.getHumi();
-			Slight = setting.getLight();
-			Stimeon = sdfTime.format(setting.getTimeon());// sqltime转为date指定类型
-			Stimeoff = sdfTime.format(setting.getTimeoff());// sqltime转为date指定类型
-			Smart = setting.getSmart();
-
 			alarmService = ApplicationContextHelper.getBean(AlarmService.class);// 添加报警信息到数据库
 			Alarm alarm = new Alarm();
 
-			if (human1.equals("hh")) {
-
-			}
-
 			alarm.setHuman(human1);
-			alarm.setSmoke(smoke1);
-			alarm.setState("ha");
+			if (smoke1.equals("00")) {
+				alarm.setSmoke("安全");
+			} else if (smoke1.equals("01")) {
+				alarm.setSmoke("有烟雾存在");
+			}
+			alarm.setState("未处理");
 			alarm.setDate(timestamp);
 
 			alarmService.addAlarmInfo(alarm);
@@ -155,11 +144,11 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			Iterator<String> it1 = keySet.iterator();
 			while (it1.hasNext()) {
 				String ID = it1.next();
-				if (ID.equals("8B 55 01")) {
+				if (ID.equals("C4 36 01")) {
 					temp = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("8B 55 02")) {
+				} else if (ID.equals("C4 36 02")) {
 					humi = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
-				} else if (ID.equals("E9 4E 01")) {
+				} else if (ID.equals("04 63 01")) {
 					light = String.valueOf(CharFormatUtil.exchange(dataAll.get(ID)));
 				}
 			}
@@ -273,7 +262,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 	public static void sendMsg(String com) {
 
 		String info = "";
-		String msg = "071800F1142401" + com;// 要发送的命令
+		String msg = "071800F1AE7601" + com;// 要发送的命令
 		info = "02" + msg + CharFormatUtil.checkcode(msg);
 		System.out.println("info=" + info + "  字符串：" + CharFormatUtil.hexStr2Bytes(info));
 
@@ -312,7 +301,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 		calendar.setTimeInMillis(System.currentTimeMillis());
 
 		String control = "";
-		control = dataAll.get("14 24 01");
+		control = dataAll.get("AE 76 01");
 
 		String x = CharFormatUtil.hexString2binaryString(control);
 
@@ -359,8 +348,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 							+ CharFormatUtil.binaryString2hexString("0" + air_control + alarm_control + door_control));
 					lamp_control = "0";
 					System.out.println("lampofft");
-				} else if (calendar.getTimeInMillis() > Scalendaron.getTimeInMillis()
-						&& calendar.getTimeInMillis() < Scalendaroff.getTimeInMillis() && lamp_control.equals("0")) {
+				} else if ((calendar.getTimeInMillis() > Scalendaron.getTimeInMillis()
+						|| calendar.getTimeInMillis() < Scalendaroff.getTimeInMillis()) && lamp_control.equals("0")) {
 					sendMsg("0"
 							+ CharFormatUtil.binaryString2hexString("1" + air_control + alarm_control + door_control));
 					lamp_control = "1";

@@ -40,8 +40,9 @@
 			</ul>
 
 			<ul id="Nav1" class="layui-nav layui-layout-right">
-				<li class="layui-nav-item"><a href="javascript:;"><img
-						src="" class="layui-nav-img"><span id="welcome">未登录！</span></a>
+				<li class="layui-nav-item"><span class="layui-badge-dot"
+					id="alarmdot"></span><a href="javascript:;"><img src=""
+						class="layui-nav-img"><span id="welcome">未登录！</span></a>
 					<dl class="layui-nav-child">
 						<dd>
 							<a href="modifypsd.html">个人中心</a>
@@ -130,8 +131,16 @@
 				url : '/Smart_Building/user/getAlarm',
 				dataType : "json", //返回数据形式为json
 				success : function(map) {
-					document.getElementById('alarm').innerHTML = map.count;
+	
 					console.log(map.count)
+					if (map.count == 0) {
+						document.getElementById('alarm').style.display = "none";
+						document.getElementById('alarmdot').style.display = "none";
+					} else {
+						document.getElementById('alarm').style.display = "inline";
+						document.getElementById('alarm').innerHTML = map.count;
+						document.getElementById('alarmdot').style.display = "inline";
+					}
 				},
 			});
 		}

@@ -15,7 +15,6 @@ import cn.mao.service.TriprecordService;
 import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.CharFormatUtil;
 
-@SuppressWarnings("restriction")
 public class Rxtx_Rfid implements SerialPortEventListener {
 
 	private TriprecordService triprecordService;

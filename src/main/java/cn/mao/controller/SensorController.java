@@ -99,9 +99,9 @@ public class SensorController {
 		Iterator<String> it1 = keySet.iterator();
 		while (it1.hasNext()) {
 			String ID = it1.next();
-			if (ID.equals("F8 DE 01")) {
+			if (ID.equals(" 01")) {
 				human = Rxtx_sensor.dataAll.get(ID);
-			} else if (ID.equals("14 24 01")) {
+			} else if (ID.equals("AE 76 01")) {
 				control = Rxtx_sensor.dataAll.get(ID);
 			}
 		}
