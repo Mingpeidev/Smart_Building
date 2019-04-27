@@ -196,7 +196,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
+			/*if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
 				ScheduleUtil.stard(insertsensorRunnable, 20, 20, TimeUnit.SECONDS);// 每20s写入一次传感器数据到数据库
 				System.out.println("开启传感器写入进程");
 			}
@@ -204,7 +204,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			if (!ScheduleUtil.isAlive(smartRunnable) && serialPort != null) {
 				ScheduleUtil.stard(smartRunnable, 10, 10, TimeUnit.SECONDS);// 每10s读取数据库与传感器信息并按设定的阈值运行
 				System.out.println("开启智能控制进程");
-			}
+			}*/
 
 			break;
 
@@ -224,7 +224,7 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			int len = 0;
 			while ((len = inputStream.read(readBuffer)) != -1) {
 
-				System.out.println("实时反馈：" + CharFormatUtil.byte2HexStr(readBuffer, len));
+				//System.out.println("实时反馈：" + CharFormatUtil.byte2HexStr(readBuffer, len));
 
 				data2 = CharFormatUtil.byte2HexStr(readBuffer, len);
 				int x = data2.split(" ").length;

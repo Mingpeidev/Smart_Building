@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 周期执行线程工具类
  * 
- * @author 毛明培
+ * @author Mingpeidev
  *
  */
 public class ScheduleUtil {
