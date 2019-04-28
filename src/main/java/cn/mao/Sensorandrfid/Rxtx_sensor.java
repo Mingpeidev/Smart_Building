@@ -113,18 +113,22 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			System.out.println("写入数据库" + timestamp);
 
 			alarmService = ApplicationContextHelper.getBean(AlarmService.class);// 添加报警信息到数据库
-			Alarm alarm = new Alarm();
 
-			alarm.setHuman(human1);
-			if (smoke1.equals("00")) {
-				alarm.setSmoke("安全");
-			} else if (smoke1.equals("01")) {
-				alarm.setSmoke("有烟雾存在");
+			if (smoke1.equals("00") && human1.equals("00")) {
+				System.out.println("正常。不写入报警list");
+			} else {
+				Alarm alarm = new Alarm();
+				alarm.setHuman(human1);
+				if (smoke1.equals("00")) {
+					alarm.setSmoke("安全");
+				} else if (smoke1.equals("01")) {
+					alarm.setSmoke("有烟雾存在");
+				}
+				alarm.setState("未处理");
+				alarm.setDate(timestamp);
+
+				alarmService.addAlarmInfo(alarm);
 			}
-			alarm.setState("未处理");
-			alarm.setDate(timestamp);
-
-			alarmService.addAlarmInfo(alarm);
 
 		}
 
@@ -196,15 +200,16 @@ public class Rxtx_sensor implements SerialPortEventListener {
 
 			readComm();
 
-			/*if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort != null) {
-				ScheduleUtil.stard(insertsensorRunnable, 20, 20, TimeUnit.SECONDS);// 每20s写入一次传感器数据到数据库
-				System.out.println("开启传感器写入进程");
-			}
-
-			if (!ScheduleUtil.isAlive(smartRunnable) && serialPort != null) {
-				ScheduleUtil.stard(smartRunnable, 10, 10, TimeUnit.SECONDS);// 每10s读取数据库与传感器信息并按设定的阈值运行
-				System.out.println("开启智能控制进程");
-			}*/
+			/*
+			 * if (!ScheduleUtil.isAlive(insertsensorRunnable) && serialPort !=
+			 * null) { ScheduleUtil.stard(insertsensorRunnable, 20, 20,
+			 * TimeUnit.SECONDS);// 每20s写入一次传感器数据到数据库
+			 * System.out.println("开启传感器写入进程"); }
+			 * 
+			 * if (!ScheduleUtil.isAlive(smartRunnable) && serialPort != null) {
+			 * ScheduleUtil.stard(smartRunnable, 10, 10, TimeUnit.SECONDS);//
+			 * 每10s读取数据库与传感器信息并按设定的阈值运行 System.out.println("开启智能控制进程"); }
+			 */
 
 			break;
 
@@ -224,7 +229,8 @@ public class Rxtx_sensor implements SerialPortEventListener {
 			int len = 0;
 			while ((len = inputStream.read(readBuffer)) != -1) {
 
-				//System.out.println("实时反馈：" + CharFormatUtil.byte2HexStr(readBuffer, len));
+				// System.out.println("实时反馈：" +
+				// CharFormatUtil.byte2HexStr(readBuffer, len));
 
 				data2 = CharFormatUtil.byte2HexStr(readBuffer, len);
 				int x = data2.split(" ").length;

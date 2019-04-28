@@ -237,7 +237,7 @@
 						<div class="chart-header">
 							<div class="metawrap">
 								<div class="meta">
-									<span>报警器</span>
+									<span>加湿器</span>
 								</div>
 								<div class="total">
 									<span id="alarm_text" style="font-size:24px">未获取</span>
@@ -265,7 +265,7 @@
 			</div>
 			<div class="layui-col-sm12 layui-col-md12">
 				<div class="layui-card">
-					<div class="layui-tab layui-tab-brief">
+					<div class="layui-tab layui-tab-brief" lay-filter="tabfilter">
 						<ul class="layui-tab-title">
 							<li class="layui-this">实时数据</li>
 							<li>实时曲线</li>
@@ -304,6 +304,16 @@
 		var element = layui.element;
 		var table = layui.table;
 		var util = layui.util;
+	
+		//切换tab时重新加载table
+		element.on('tab(tabfilter)', function(data) {
+			//console.log(this); //当前Tab标题所在的原始DOM元素
+			console.log(data.index); //得到当前Tab的所在下标
+			//console.log(data.elem); //得到当前的Tab大容器
+			if (data.index == "0") {
+				getMap();
+			}
+		});
 	
 		//展示已知数据于表格,并定时刷新
 		function getMap() {
