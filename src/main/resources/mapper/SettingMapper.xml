@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mao.dao.SettingMapper">
-	<resultMap id="BaseResultMap" type="cn.mao.pojo.Setting">
-		<id column="id" jdbcType="INTEGER" property="id" />
-		<result column="temp" jdbcType="INTEGER" property="temp" />
-		<result column="humi" jdbcType="INTEGER" property="humi" />
-		<result column="light" jdbcType="INTEGER" property="light" />
-		<result column="timeon" jdbcType="TIME" property="timeon" />
-		<result column="timeoff" jdbcType="TIME" property="timeoff" />
-		<result column="smart" jdbcType="VARCHAR" property="smart" />
-	</resultMap>
-	<sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="cn.mao.pojo.Setting">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="temp" jdbcType="INTEGER" property="temp"/>
+        <result column="humi" jdbcType="INTEGER" property="humi"/>
+        <result column="light" jdbcType="INTEGER" property="light"/>
+        <result column="timeon" jdbcType="TIME" property="timeon"/>
+        <result column="timeoff" jdbcType="TIME" property="timeoff"/>
+        <result column="smart" jdbcType="VARCHAR" property="smart"/>
+    </resultMap>
+    <sql id="Base_Column_List">
 		id, temp, humi, light, timeon, timeoff, smart
 	</sql>
-	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
-		resultMap="BaseResultMap">
-		select
-		<include refid="Base_Column_List" />
-		from setting
-		where id = #{id,jdbcType=INTEGER}
-	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from setting
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from
 		setting
 		where id = #{id,jdbcType=INTEGER}
 	</delete>
-	<insert id="insert" parameterType="cn.mao.pojo.Setting">
+    <insert id="insert" parameterType="cn.mao.pojo.Setting">
 		insert into setting (id, temp,
 		humi,
 		light, timeon, timeoff, smart
@@ -38,80 +38,80 @@
 		#{smart,jdbcType=VARCHAR}
 		)
 	</insert>
-	<insert id="insertSelective" parameterType="cn.mao.pojo.Setting">
-		insert into setting
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				id,
-			</if>
-			<if test="temp != null">
-				temp,
-			</if>
-			<if test="humi != null">
-				humi,
-			</if>
-			<if test="light != null">
-				light,
-			</if>
-			<if test="timeon != null">
-				timeon,
-			</if>
-			<if test="timeoff != null">
-				timeoff,
-			</if>
-			<if test="smart != null">
-				smart,
-			</if>
-		</trim>
-		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				#{id,jdbcType=INTEGER},
-			</if>
-			<if test="temp != null">
-				#{temp,jdbcType=INTEGER},
-			</if>
-			<if test="humi != null">
-				#{humi,jdbcType=INTEGER},
-			</if>
-			<if test="light != null">
-				#{light,jdbcType=INTEGER},
-			</if>
-			<if test="timeon != null">
-				#{timeon,jdbcType=TIME},
-			</if>
-			<if test="timeoff != null">
-				#{timeoff,jdbcType=TIME},
-			</if>
-			<if test="smart != null">
-				#{smart,jdbcType=VARCHAR},
-			</if>
-		</trim>
-	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="cn.mao.pojo.Setting">
-		update setting
-		<set>
-			<if test="temp != null">
-				temp = #{temp,jdbcType=INTEGER},
-			</if>
-			<if test="humi != null">
-				humi = #{humi,jdbcType=INTEGER},
-			</if>
-			<if test="light != null">
-				light = #{light,jdbcType=INTEGER},
-			</if>
-			<if test="timeon != null">
-				timeon = #{timeon,jdbcType=TIME},
-			</if>
-			<if test="timeoff != null">
-				timeoff = #{timeoff,jdbcType=TIME},
-			</if>
-			<if test="smart != null">
-				smart = #{smart,jdbcType=VARCHAR},
-			</if>
-		</set>
-		where id = #{id,jdbcType=INTEGER}
-	</update>
-	<update id="updateByPrimaryKey" parameterType="cn.mao.pojo.Setting">
+    <insert id="insertSelective" parameterType="cn.mao.pojo.Setting">
+        insert into setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="temp != null">
+                temp,
+            </if>
+            <if test="humi != null">
+                humi,
+            </if>
+            <if test="light != null">
+                light,
+            </if>
+            <if test="timeon != null">
+                timeon,
+            </if>
+            <if test="timeoff != null">
+                timeoff,
+            </if>
+            <if test="smart != null">
+                smart,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="temp != null">
+                #{temp,jdbcType=INTEGER},
+            </if>
+            <if test="humi != null">
+                #{humi,jdbcType=INTEGER},
+            </if>
+            <if test="light != null">
+                #{light,jdbcType=INTEGER},
+            </if>
+            <if test="timeon != null">
+                #{timeon,jdbcType=TIME},
+            </if>
+            <if test="timeoff != null">
+                #{timeoff,jdbcType=TIME},
+            </if>
+            <if test="smart != null">
+                #{smart,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="cn.mao.pojo.Setting">
+        update setting
+        <set>
+            <if test="temp != null">
+                temp = #{temp,jdbcType=INTEGER},
+            </if>
+            <if test="humi != null">
+                humi = #{humi,jdbcType=INTEGER},
+            </if>
+            <if test="light != null">
+                light = #{light,jdbcType=INTEGER},
+            </if>
+            <if test="timeon != null">
+                timeon = #{timeon,jdbcType=TIME},
+            </if>
+            <if test="timeoff != null">
+                timeoff = #{timeoff,jdbcType=TIME},
+            </if>
+            <if test="smart != null">
+                smart = #{smart,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="cn.mao.pojo.Setting">
 		update setting
 		set
 		temp = #{temp,jdbcType=INTEGER},

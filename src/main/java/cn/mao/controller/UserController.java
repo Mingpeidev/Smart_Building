@@ -1,290 +1,290 @@
 package cn.mao.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import cn.mao.Sensorandrfid.Rxtx_Rfid;
+import cn.mao.Sensorandrfid.Rxtx_sensor;
+import cn.mao.pojo.User;
+import cn.mao.service.UserService;
+import cn.mao.util.SsmResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import cn.mao.pojo.User;
-import cn.mao.service.UserService;
-import cn.mao.Sensorandrfid.Rxtx_Rfid;
-import cn.mao.Sensorandrfid.Rxtx_sensor;
-import cn.mao.util.SsmResult;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
 
 public class UserController {
 
-	@Autowired
-	private UserService userServivce;
-	Map<String, Object> loginmap = new HashMap<String, Object>();
+    @Autowired
+    private UserService userServivce;
+    Map<String, Object> loginmap = new HashMap<String, Object>();
 
-	/**
-	 * 电脑端
-	 */
+    /**
+     * 电脑端
+     */
 
-	/**
-	 * 正常访问login页面
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/login")
-	public String login() {
+    /**
+     * 正常访问login页面
+     *
+     * @return
+     */
+    @RequestMapping("/login")
+    public String login() {
 
-		if (Rxtx_sensor.judgelink() == null) {
-			System.out.println("开启传感器串口！电脑");
-			new Rxtx_sensor().init();
-		}
+        if (Rxtx_sensor.judgelink() == null) {
+            System.out.println("开启传感器串口！电脑");
+            new Rxtx_sensor().init();
+        }
 
-		return "login";
-	}
+        return "login";
+    }
 
-	/**
-	 * 跳转到主页
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/index")
-	public String index() {
-		return "index";
-	}
+    /**
+     * 跳转到主页
+     *
+     * @return
+     */
+    @RequestMapping("/index")
+    public String index() {
+        return "index";
+    }
 
-	/**
-	 * 跳转到智能设置
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/smartset")
-	public String smart() {
-		return "smartset";
-	}
+    /**
+     * 跳转到智能设置
+     *
+     * @return
+     */
+    @RequestMapping("/smartset")
+    public String smart() {
+        return "smartset";
+    }
 
-	/**
-	 * 跳转到修改密码
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/modifypsd")
-	public String modifypsd() {
-		return "modifypsd";
-	}
+    /**
+     * 跳转到修改密码
+     *
+     * @return
+     */
+    @RequestMapping("/modifypsd")
+    public String modifypsd() {
+        return "modifypsd";
+    }
 
-	/**
-	 * 跳转到门禁
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/door")
-	public String door() {
-		if (Rxtx_Rfid.judgelink() == null) {
-			System.out.println("开启rfid串口");
-			Rxtx_Rfid rfid = new Rxtx_Rfid();
-			rfid.init();
-		}
-		return "door";
-	}
+    /**
+     * 跳转到门禁
+     *
+     * @return
+     */
+    @RequestMapping("/door")
+    public String door() {
+        if (Rxtx_Rfid.judgelink() == null) {
+            System.out.println("开启rfid串口");
+            Rxtx_Rfid rfid = new Rxtx_Rfid();
+            rfid.init();
+        }
+        return "door";
+    }
 
-	/**
-	 * 跳转到报警信息
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/alarm")
-	public String alarm() {
-		return "alarm";
-	}
+    /**
+     * 跳转到报警信息
+     *
+     * @return
+     */
+    @RequestMapping("/alarm")
+    public String alarm() {
+        return "alarm";
+    }
 
-	/**
-	 * 跳转到控制台
-	 * 
-	 * @return
-	 */
-	@RequestMapping("/console")
-	public String console() {
-		return "console";
-	}
+    /**
+     * 跳转到控制台
+     *
+     * @return
+     */
+    @RequestMapping("/console")
+    public String console() {
+        return "console";
+    }
 
-	/**
-	 * 登录 加@RequestParam表示重命名，并且此字符串为必须
-	 * 
-	 * @param username
-	 * @param password
-	 * @param session
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping("/checkLogin")
-	@ResponseBody
-	public Map<String, Object> checkLogin(@RequestParam("username") String username,
-			@RequestParam("password") String password, HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
-		// 调用service方法
-		loginmap.clear();
+    /**
+     * 登录 加@RequestParam表示重命名，并且此字符串为必须
+     *
+     * @param username
+     * @param password
+     * @param session
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/checkLogin")
+    @ResponseBody
+    public Map<String, Object> checkLogin(@RequestParam("username") String username,
+                                          @RequestParam("password") String password, HttpSession session, HttpServletRequest request,
+                                          HttpServletResponse response) {
+        // 调用service方法
+        loginmap.clear();
 
-		try {
-			User user = userServivce.checkLogin(username, password);
+        try {
+            User user = userServivce.checkLogin(username, password);
 
-			if (user != null) {
-				loginmap.put("msg", "1");
-				session.setAttribute("user", user);
+            if (user != null) {
+                loginmap.put("msg", "1");
+                session.setAttribute("user", user);
 
-				Cookie ck = new Cookie("username", username);
-				String path = request.getContextPath();
-				ck.setPath(path);
-				ck.setMaxAge(30 * 24 * 60 * 60);
-				response.addCookie(ck);
+                Cookie ck = new Cookie("username", username);
+                String path = request.getContextPath();
+                ck.setPath(path);
+                ck.setMaxAge(30 * 24 * 60 * 60);
+                response.addCookie(ck);
 
-			} else {
-				loginmap.put("msg", "用户名或密码错误，请重新登陆！");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			loginmap.put("msg", e.getMessage());
-		}
+            } else {
+                loginmap.put("msg", "用户名或密码错误，请重新登陆！");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            loginmap.put("msg", e.getMessage());
+        }
 
-		return loginmap;
-	}
+        return loginmap;
+    }
 
-	/**
-	 * 在index检查是否登录
-	 * 
-	 * @param session
-	 * @return
-	 */
-	@RequestMapping("/judgeLogin")
-	@ResponseBody
-	public Map<String, Object> judgeLogin(HttpSession session) {
-		Map<String, Object> judgemap = new HashMap<String, Object>();
+    /**
+     * 在index检查是否登录
+     *
+     * @param session
+     * @return
+     */
+    @RequestMapping("/judgeLogin")
+    @ResponseBody
+    public Map<String, Object> judgeLogin(HttpSession session) {
+        Map<String, Object> judgemap = new HashMap<String, Object>();
 
-		User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-		if (user != null) {
-			judgemap.put("logininfo", user.getUsername());
-		} else {
-			judgemap.put("logininfo", "fail");
-		}
+        if (user != null) {
+            judgemap.put("logininfo", user.getUsername());
+        } else {
+            judgemap.put("logininfo", "fail");
+        }
 
-		return judgemap;
-	}
+        return judgemap;
+    }
 
-	/**
-	 * 注册
-	 * 
-	 * @param user
-	 * @return
-	 */
-	@RequestMapping("/doregis")
-	@ResponseBody
-	public Map<String, Object> doregis(User user) {
-		Map<String, Object> registermap = new HashMap<String, Object>();
+    /**
+     * 注册
+     *
+     * @param user
+     * @return
+     */
+    @RequestMapping("/doregis")
+    @ResponseBody
+    public Map<String, Object> doregis(User user) {
+        Map<String, Object> registermap = new HashMap<String, Object>();
 
-		if (user.getUsername().length() < 2 || user.getPassword().length() < 6) {
-			registermap.put("data", "格式不对");
-		} else if (userServivce.judge(user) == "yes") {
-			userServivce.register(user);
-			registermap.put("data", "success");
-		} else {
-			registermap.put("data", "fail");
-		}
+        if (user.getUsername().length() < 2 || user.getPassword().length() < 6) {
+            registermap.put("data", "格式不对");
+        } else if (userServivce.judge(user) == "yes") {
+            userServivce.register(user);
+            registermap.put("data", "success");
+        } else {
+            registermap.put("data", "fail");
+        }
 
-		return registermap;
-	}
+        return registermap;
+    }
 
-	/**
-	 * 注销
-	 * 
-	 * @param session
-	 * @return
-	 */
-	@RequestMapping("/outLogin")
-	public String outLogin(HttpSession session) {
-		// 通过session.invalidata()方法来注销当前的session
-		session.invalidate();
+    /**
+     * 注销
+     *
+     * @param session
+     * @return
+     */
+    @RequestMapping("/outLogin")
+    public String outLogin(HttpSession session) {
+        // 通过session.invalidata()方法来注销当前的session
+        session.invalidate();
 
-		return "login";
-	}
+        return "login";
+    }
 
-	/**
-	 * 修改密码
-	 * 
-	 * @param username
-	 * @param password
-	 * @param password1
-	 * @return
-	 */
-	@RequestMapping("/updatePassword")
-	@ResponseBody
-	public Map<String, Object> updatePassword(@RequestParam("username") String username,
-			@RequestParam("password") String password, @RequestParam("password1") String password1) {
-		// 调用service方法
-		Map<String, Object> updatemap = new HashMap<String, Object>();
+    /**
+     * 修改密码
+     *
+     * @param username
+     * @param password
+     * @param password1
+     * @return
+     */
+    @RequestMapping("/updatePassword")
+    @ResponseBody
+    public Map<String, Object> updatePassword(@RequestParam("username") String username,
+                                              @RequestParam("password") String password, @RequestParam("password1") String password1) {
+        // 调用service方法
+        Map<String, Object> updatemap = new HashMap<String, Object>();
 
-		User user = userServivce.checkLogin(username, password);
+        User user = userServivce.checkLogin(username, password);
 
-		if (user != null) {
-			userServivce.updatePassword(username, password1);
-			updatemap.put("msg", "success");
-		} else {
-			updatemap.put("msg", "fail");
-		}
+        if (user != null) {
+            userServivce.updatePassword(username, password1);
+            updatemap.put("msg", "success");
+        } else {
+            updatemap.put("msg", "fail");
+        }
 
-		return updatemap;
-	}
+        return updatemap;
+    }
 
-	/**
-	 * 手机端
-	 */
-	/**
-	 * 手机端登录
-	 * 
-	 * @param username
-	 * @param password
-	 * @return
-	 */
-	@RequestMapping("/logininphone")
-	@ResponseBody
-	public SsmResult logininphone(@RequestParam("username") String username,
-			@RequestParam("password") String password) {
-		User user = userServivce.checkLogin(username, password);
-		if (user != null) {
-			return SsmResult.ok(1);
-		} else {
-			return SsmResult.ok(0);
-		}
-	}
+    /**
+     * 手机端
+     */
+    /**
+     * 手机端登录
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    @RequestMapping("/logininphone")
+    @ResponseBody
+    public SsmResult logininphone(@RequestParam("username") String username,
+                                  @RequestParam("password") String password) {
+        User user = userServivce.checkLogin(username, password);
+        if (user != null) {
+            return SsmResult.ok(1);
+        } else {
+            return SsmResult.ok(0);
+        }
+    }
 
-	/**
-	 * 手机端注册
-	 * 
-	 * @param username
-	 * @param password
-	 * @return
-	 */
-	@RequestMapping("/registerinphone")
-	@ResponseBody
-	public SsmResult registerinphone(@RequestParam("username") String username,
-			@RequestParam("password") String password) {
+    /**
+     * 手机端注册
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    @RequestMapping("/registerinphone")
+    @ResponseBody
+    public SsmResult registerinphone(@RequestParam("username") String username,
+                                     @RequestParam("password") String password) {
 
-		User user = new User();
+        User user = new User();
 
-		user.setUsername(username);
-		user.setPassword(password);
+        user.setUsername(username);
+        user.setPassword(password);
 
-		if (userServivce.judge(user) == "yes") {
-			userServivce.register(user);
-			return SsmResult.ok(1);
-		} else {
-			return SsmResult.ok(0);
-		}
-	}
+        if (userServivce.judge(user) == "yes") {
+            userServivce.register(user);
+            return SsmResult.ok(1);
+        } else {
+            return SsmResult.ok(0);
+        }
+    }
 
 }

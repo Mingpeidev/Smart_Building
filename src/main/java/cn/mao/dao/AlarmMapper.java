@@ -1,21 +1,21 @@
 package cn.mao.dao;
 
-import java.util.List;
-
 import cn.mao.pojo.Alarm;
 
+import java.util.List;
+
 public interface AlarmMapper {
-	int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Integer id);
 
-	int insert(Alarm alarm);
+    int insert(Alarm alarm);
 
-	int insertSelective(Alarm record);
+    int insertSelective(Alarm record);
 
-	Alarm selectByPrimaryKey(Integer id);
+    Alarm selectByPrimaryKey(Integer id);
 
-	int updateByPrimaryKeySelective(Alarm record);
+    int updateByPrimaryKeySelective(Alarm record);
 
-	int updateByPrimaryKey(Alarm record);
+    int updateByPrimaryKey(Alarm record);
 
-	List<Alarm> selectAlarm();
+    List<Alarm> selectAlarm();
 }

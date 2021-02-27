@@ -1,100 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<link rel="stylesheet" href="../assets/css/layui.css">
-<link rel="stylesheet" href="../assets/css/view.css" />
-<title></title>
-<script type="text/javascript" src="../js/jquery.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="../assets/css/layui.css">
+    <link rel="stylesheet" href="../assets/css/view.css"/>
+    <title></title>
+    <script type="text/javascript" src="../js/jquery.js"></script>
 </head>
 <body class="layui-view-body">
 
-	<div class="layui-tab-item layui-show">
-		<table id="sensortable" lay-filter="test"></table>
-	</div>
+<div class="layui-tab-item layui-show">
+    <table id="sensortable" lay-filter="test"></table>
+</div>
 
-	<!-- 行按钮 -->
-	<script type="text/html" id="barDemo">
-  <a class="layui-btn layui-btn-xs" lay-event="edit">处理情况</a>
+<!-- 行按钮 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">处理情况</a>
 </script>
 
 
-	<script src="../assets/layui.all.js"></script>
-	<script>
-		var element = layui.element;
-		var table = layui.table;
-		var util = layui.util;
-	
-		//展示已知数据
-		function getalarmMap() {
-			table.render({
-				elem : '#sensortable',
-				url : '/Smart_Building/user/getAlarm',
-				cols : [ [ //标题栏
-					{
-						field : 'id',
-						title : 'ID',
-						sort : true
-					}
-					, {
-						field : 'human',
-						title : '人体红外',
-					}
-					, {
-						field : 'smoke',
-						title : '火灾报警器',
-					}
-					, {
-						field : 'state',
-						title : '状态',
-					}
-					, {
-						field : 'date',
-						title : '时间',
-						templet : function(d) {
-							return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
-						}
-					}
-					, {
-						fixed : 'right',
-						align : 'center',
-						title : '处理状态',
-						toolbar : '#barDemo'
-					}
-				] ],
-				skin : 'line', //表格风格
-				even : true,
-				page : false, //是否显示分页
-			});
-		}
-		getalarmMap();
-		setInterval("getalarmMap()", 10000);
-	
-		//监听行工具事件
-		table.on('tool(test)', function(obj) {
-			tabledata = obj.data;
-			console.log(tabledata.id)
-			switch (obj.event) {
-			case 'edit':
-				layer.confirm('已经处理了' + "  人体红外：" + tabledata.human + "  火灾：" + tabledata.smoke + "的异常信息了吗？", function(index) {
-					$.ajax({
-						type : 'POST',
-						url : '/Smart_Building/user/editAlarm',
-						data : {
-							id : tabledata.id,
-						},
-						dataType : "json", //返回数据形式为json
-						success : function(map) {
-	
-							layer.msg(map.data);
-							getalarmMap();
-	
-						}
-					})
-				});
-			}
-		})
-	</script>
+<script src="../assets/layui.all.js"></script>
+<script>
+    var element = layui.element;
+    var table = layui.table;
+    var util = layui.util;
+
+    //展示已知数据
+    function getalarmMap() {
+        table.render({
+            elem: '#sensortable',
+            url: '/Smart_Building/user/getAlarm',
+            cols: [[ //标题栏
+                {
+                    field: 'id',
+                    title: 'ID',
+                    sort: true
+                }
+                , {
+                    field: 'human',
+                    title: '人体红外',
+                }
+                , {
+                    field: 'smoke',
+                    title: '火灾报警器',
+                }
+                , {
+                    field: 'state',
+                    title: '状态',
+                }
+                , {
+                    field: 'date',
+                    title: '时间',
+                    templet: function (d) {
+                        return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+                    }
+                }
+                , {
+                    fixed: 'right',
+                    align: 'center',
+                    title: '处理状态',
+                    toolbar: '#barDemo'
+                }
+            ]],
+            skin: 'line', //表格风格
+            even: true,
+            page: false, //是否显示分页
+        });
+    }
+
+    getalarmMap();
+    setInterval("getalarmMap()", 10000);
+
+    //监听行工具事件
+    table.on('tool(test)', function (obj) {
+        tabledata = obj.data;
+        console.log(tabledata.id)
+        switch (obj.event) {
+            case 'edit':
+                layer.confirm('已经处理了' + "  人体红外：" + tabledata.human + "  火灾：" + tabledata.smoke + "的异常信息了吗？", function (index) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Smart_Building/user/editAlarm',
+                        data: {
+                            id: tabledata.id,
+                        },
+                        dataType: "json", //返回数据形式为json
+                        success: function (map) {
+
+                            layer.msg(map.data);
+                            getalarmMap();
+
+                        }
+                    })
+                });
+        }
+    })
+</script>
 </body>
 </html>

@@ -1,411 +1,417 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<link rel="stylesheet" href="../assets/css/layui.css">
-<link rel="stylesheet" href="../assets/css/view.css" />
-<script type="text/javascript" src="../js/jquery.js"></script>
-<title>门禁系统</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="../assets/css/layui.css">
+    <link rel="stylesheet" href="../assets/css/view.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <title>门禁系统</title>
 </head>
 <body class="layui-view-body">
-	<!-- 修改和添加表单，不显示-->
-	<div id="test1111"
-		style="display: none;padding: 0px;margin-top:80px;margin-left:10px">
-		<form class="layui-form layui-form-pane1" lay-filter="first">
-			<div class="layui-form-item">
-				<label class="layui-form-label">居民名字</label>
-				<div class="layui-input-inline">
-					<input type="text" name="residentname" lay-verify="required"
-						id="residentname" placeholder="请输入居民名字" autocomplete="off"
-						class="layui-input">
-				</div>
-			</div>
+<!-- 修改和添加表单，不显示-->
+<div id="test1111"
+     style="display: none;padding: 0px;margin-top:80px;margin-left:10px">
+    <form class="layui-form layui-form-pane1" lay-filter="first">
+        <div class="layui-form-item">
+            <label class="layui-form-label">居民名字</label>
+            <div class="layui-input-inline">
+                <input type="text" name="residentname" lay-verify="required"
+                       id="residentname" placeholder="请输入居民名字" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
 
-			<div class="layui-form-item">
-				<label class="layui-form-label">门禁卡号</label>
-				<div class="layui-input-inline">
-					<input type="text" name="doorid" lay-verify="required" id="doorid"
-						placeholder="请输入门禁卡号" autocomplete="off" class="layui-input">
-				</div>
-			</div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">门禁卡号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="doorid" lay-verify="required" id="doorid"
+                       placeholder="请输入门禁卡号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
 
-			<div class="layui-form-item">
-				<label class="layui-form-label">单选框</label>
-				<div class="layui-input-inline">
-					<input type="radio" name="sex" value="男" title="男"> <input
-						type="radio" name="sex" value="女" title="女">
-				</div>
-			</div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">单选框</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="sex" value="男" title="男"> <input
+                    type="radio" name="sex" value="女" title="女">
+            </div>
+        </div>
 
-			<div class="layui-form-item">
+        <div class="layui-form-item">
 
-				<div style="margin-top:100px;margin-left:70px"
-					class="layui-btn-container">
-					<button type="button" class="layui-btn" onclick="searchcard()">寻卡</button>
-					<button name="Btn1" class="layui-btn" lay-submit lay-filter="*">添加</button>
-					<button name="Btn2" class="layui-btn" lay-submit lay-filter="**">修改</button>
-					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            <div style="margin-top:100px;margin-left:70px"
+                 class="layui-btn-container">
+                <button type="button" class="layui-btn" onclick="searchcard()">寻卡</button>
+                <button name="Btn1" class="layui-btn" lay-submit lay-filter="*">添加</button>
+                <button name="Btn2" class="layui-btn" lay-submit lay-filter="**">修改</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
 
-				</div>
-			</div>
-		</form>
-	</div>
-	<div class="layui-content">
-		<div class="layui-row layui-col-space20">
-			<div class="layui-col-sm6 layui-col-md3">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>提示信息</span>
-								</div>
-								<div class="total" id="welcome_text">无状态</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="layui-content">
+    <div class="layui-row layui-col-space20">
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>提示信息</span>
+                            </div>
+                            <div class="total" id="welcome_text">无状态</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-			<div class="layui-col-sm12 layui-col-md12">
-				<div class="layui-card">
-					<div class="layui-tab layui-tab-brief" lay-filter="tabfilter">
-						<ul class="layui-tab-title">
-							<li class="layui-this">实时门禁信息</li>
-							<li>住户管理</li>
-						</ul>
-						<div class="layui-tab-content">
-							<div class="layui-tab-item layui-show">
-								<form class="layui-form" method="post" action="javascript:;">
-									<div class="layui-form-item">
-										<div class="layui-inline">
-											<div class="layui-input-inline">
-												<input type="text" name="searchresidentname"
-													id="searchresidentname" placeholder="请输入居民名字查找"
-													autocomplete="off" class="layui-input">
-											</div>
-										</div>
-										<div class="layui-inline">
+        <div class="layui-col-sm12 layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-tab layui-tab-brief" lay-filter="tabfilter">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">实时门禁信息</li>
+                        <li>住户管理</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <form class="layui-form" method="post" action="javascript:;">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="searchresidentname"
+                                                   id="searchresidentname" placeholder="请输入居民名字查找"
+                                                   autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
 
-											<button name="Btn3" class="layui-btn" lay-submit
-												lay-filter="***">查找</button>
+                                        <button name="Btn3" class="layui-btn" lay-submit
+                                                lay-filter="***">查找
+                                        </button>
 
-										</div>
-									</div>
+                                    </div>
+                                </div>
 
-									<div class="layui-form-item"></div>
-								</form>
-								<table id="triprecordtable"></table>
-							</div>
-							<div class="layui-tab-item">
-								<table class="layui-hide" id="residenttable" lay-filter="test"></table>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- 行按钮 -->
-	<script type="text/html" id="barDemo">
-  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                                <div class="layui-form-item"></div>
+                            </form>
+                            <table id="triprecordtable"></table>
+                        </div>
+                        <div class="layui-tab-item">
+                            <table class="layui-hide" id="residenttable" lay-filter="test"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 行按钮 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
-	<!-- 顶部按钮-->
-	<script type="text/html" id="toolbarDemo">
-  <div class="layui-btn-container">
-    <button class="layui-btn layui-btn-radius layui-btn-normal" lay-event="add">添加居民</button>
-  </div>
+<!-- 顶部按钮-->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-radius layui-btn-normal" lay-event="add">添加居民</button>
+    </div>
 </script>
-	<!-- layui相关依赖及其操作 -->
-	<script src="../assets/layui.js"></script>
-	<script>
-		layui.use([ 'layer', 'table', 'element', 'form', 'util' ], function() {
-			var layer = layui.layer, //弹层
-				table = layui.table, //表格
-				element = layui.element, //元素操作
-				form = layui.form;
-			util = layui.util;
-			var index1,
-				index2,
-				tabledata,
-				ID;
-	
-			//切换tab时重新加载table
-			element.on('tab(tabfilter)', function(data) {
-				//console.log(this); //当前Tab标题所在的原始DOM元素
-				console.log(data.index); //得到当前Tab的所在下标
-				//console.log(data.elem); //得到当前的Tab大容器
-				if (data.index == "0") {
-					setInterval_searchcard();
-					getrecordMap();
-				} else {
-					getMap();
-				}
-			});
-	
-			//按钮Btn1提交监听，添加住户信息
-			form.on('submit(*)', function(data) {
-				console.log(data + index1 + "@" + index2)
-				$.ajax({
-					type : 'POST',
-					url : '/Smart_Building/user/addResident',
-					data : {
-						residentname : data.field.residentname,
-						doorid : data.field.doorid,
-						sex : data.field.sex
-					},
-					dataType : "json", //返回数据形式为json
-					success : function(map) {
-	
-						layer.msg(map.data);
-						if (map.data == "写入成功") {
-							layer.close(index1) //关闭弹窗
-							getMap();
-						}
-					}
-				})
-				return false;
-			});
-			//按钮Btn2提交监听，编辑住户信息
-			form.on('submit(**)', function(data) {
-				console.log(data + index1 + "@" + index2)
-				$.ajax({
-					type : 'POST',
-					url : '/Smart_Building/user/editResidentInfo',
-					data : {
-						id : tabledata.id,
-						residentname : data.field.residentname,
-						doorid : data.field.doorid,
-						sex : data.field.sex
-					},
-					dataType : "json", //返回数据形式为json
-					success : function(map) {
-	
-						layer.msg(map.data);
-						layer.close(index2) //关闭弹窗
-						getMap();
-					}
-				})
-				return false;
-			});
-			//按钮Btn3提交监听，查询指定用户出行信息
-			form.on('submit(***)', function(data) {
-				console.log(data)
-				var index = layer.msg('查询中，请稍候...', {
-					icon : 16,
-					time : false,
-					shade : 0
-				});
-				setTimeout(function() {
-					table.reload('triprecordtable', { //表格的id
-						url : '/Smart_Building/user/getTriprecordList',
-						where : {
-							'residentname' : data.field.searchresidentname
-						}
-					});
-					layer.close(index); //关闭加载框
-				}, 200);
-	
-				return false;
-			});
-			//获取住户信息，并显示于表格
-			function getMap() {
-				table.render({
-					elem : '#residenttable',
-					url : '/Smart_Building/user/getResidentList', //数据接口
-					title : '居民表',
-					toolbar : '#toolbarDemo', //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
-					page : true, //开启分页
-					limits : [ 5, 7, 10 ],
-					limit : 5, //每页默认显示的数量
-					cols : [ [ //表头
-						{
-							field : 'id',
-							title : 'ID',
-							sort : true,
-						}
-						, {
-							field : 'residentname',
-							title : '住户名',
-						}
-						, {
-							field : 'doorid',
-							title : '门禁ID',
-						}
-						, {
-							field : 'sex',
-							title : '性别',
-						}
-						, {
-							fixed : 'right',
-							align : 'center',
-							title : '操作',
-							toolbar : '#barDemo'
-						}
-					] ]
-				});
-			}
-			getMap();
-	
-			//获取住户出行信息，并显示于表格
-			function getrecordMap() {
-				table.render({
-					elem : '#triprecordtable',
-					url : '/Smart_Building/user/getTriprecordList', //数据接口
-					title : '居民外出表',
-					page : true, //开启分页
-					limits : [ 5, 7, 10 ],
-					limit : 5, //每页默认显示的数量
-					cols : [ [ //表头
-						{
-							field : 'id',
-							title : 'ID',
-							sort : true,
-						}
-						, {
-							field : 'residentname',
-							title : '住户名',
-						}
-						, {
-							field : 'doorid',
-							title : '门禁ID',
-						}
-						, {
-							field : 'state',
-							title : '状态',
-						}
-						, {
-							field : 'time',
-							title : '时间',
-							templet : function(d) {
-								return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
-							}
-						}
-					] ]
-				});
-			}
-			getrecordMap();
-	
-			var interval2;
-			clearInterval(interval2);
-			interval2 = setInterval(function() {
-				getrecordMap();
-				console.log(table.cache.triprecordtable[0].residentname) //显示最新人员出入情况
-				document.getElementById("welcome_text").innerHTML = table.cache.triprecordtable[0].residentname + ":" + table.cache.triprecordtable[0].state;
-			}, 10000);
-	
-			//监听头工具栏事件
-			table.on('toolbar(test)', function(obj) {
-				switch (obj.event) {
-				case 'add':
-					index1 = layer.open({
-						title : '添加居民信息',
-						type : 1,
-						skin : 'layui-layer-rim',
-						area : [ '400px', '450px' ],
-						content : $('#test1111'),
-						shadeClose : true, //点击遮罩关闭
-						end : function() {
-							setInterval_searchcard();
-						}
-					});
-					document.all["Btn1"].style.display = "inline";
-					document.all["Btn2"].style.display = "none";
-	
-					//初始赋值
-					form.val('first', {
-						'residentname' : "",
-						'doorid' : "",
-						'sex' : "男",
-					});
-					clearInterval(interval);
-	
-					break;
-				}
-				;
-			});
-			//监听行工具事件
-			table.on('tool(test)', function(obj) {
-				tabledata = obj.data;
-				console.log(tabledata.id)
-				switch (obj.event) {
-				case 'edit':
-					index2 = layer.open({
-						title : '修改居民信息',
-						type : 1,
-						skin : 'layui-layer-rim',
-						area : [ '400px', '450px' ],
-						content : $('#test1111'),
-						shadeClose : true, //点击遮罩关闭
-						end : function() {
-							setInterval_searchcard();
-						}
-					});
-					document.all["Btn1"].style.display = "none";
-					document.all["Btn2"].style.display = "inline";
-	
-					//初始赋值
-					form.val('first', {
-						'residentname' : tabledata.residentname,
-						'doorid' : tabledata.doorid,
-						'sex' : tabledata.sex,
-					});
-					clearInterval(interval);
-	
-					break;
-				case "del":
-					layer.confirm('真的要删除    ' + tabledata.residentname + "    的用户信息吗？", function(index) {
-						$.ajax({
-							type : 'POST',
-							url : '/Smart_Building/user/deleteResidentInfo',
-							data : {
-								id : tabledata.id,
-							},
-							dataType : "json", //返回数据形式为json
-							success : function(map) {
-	
-								layer.msg(map.data);
-	
-							}
-						})
-						layer.close(index);
-						getMap();
-					});
-					break;
-	
-				}
-	
-			});
-		})
-	</script>
-	<!-- 检测rfid卡号 -->
-	<script type="text/javascript">
-		var interval;
-		function setInterval_searchcard() {
-			clearInterval(interval);
-			interval = setInterval("searchcard()", 2000)
-		}
-		setInterval_searchcard();
-	
-		function searchcard() {
-			$.ajax({
-				type : 'POST',
-				url : '/Smart_Building/user/searchcard',
-				async : false,
-				dataType : "json", //返回数据形式为json
-				success : function(map) {
-					if (map.ID == "fail") {
-	
-					} else {
-						ID = map.ID;
-						document.getElementById("doorid").value = ID;
-					}
-	
-				}
-			});
-		}
-	</script>
+<!-- layui相关依赖及其操作 -->
+<script src="../assets/layui.js"></script>
+<script>
+    layui.use(['layer', 'table', 'element', 'form', 'util'], function () {
+        var layer = layui.layer, //弹层
+            table = layui.table, //表格
+            element = layui.element, //元素操作
+            form = layui.form;
+        util = layui.util;
+        var index1,
+            index2,
+            tabledata,
+            ID;
+
+        //切换tab时重新加载table
+        element.on('tab(tabfilter)', function (data) {
+            //console.log(this); //当前Tab标题所在的原始DOM元素
+            console.log(data.index); //得到当前Tab的所在下标
+            //console.log(data.elem); //得到当前的Tab大容器
+            if (data.index == "0") {
+                setInterval_searchcard();
+                getrecordMap();
+            } else {
+                getMap();
+            }
+        });
+
+        //按钮Btn1提交监听，添加住户信息
+        form.on('submit(*)', function (data) {
+            console.log(data + index1 + "@" + index2)
+            $.ajax({
+                type: 'POST',
+                url: '/Smart_Building/user/addResident',
+                data: {
+                    residentname: data.field.residentname,
+                    doorid: data.field.doorid,
+                    sex: data.field.sex
+                },
+                dataType: "json", //返回数据形式为json
+                success: function (map) {
+
+                    layer.msg(map.data);
+                    if (map.data == "写入成功") {
+                        layer.close(index1) //关闭弹窗
+                        getMap();
+                    }
+                }
+            })
+            return false;
+        });
+        //按钮Btn2提交监听，编辑住户信息
+        form.on('submit(**)', function (data) {
+            console.log(data + index1 + "@" + index2)
+            $.ajax({
+                type: 'POST',
+                url: '/Smart_Building/user/editResidentInfo',
+                data: {
+                    id: tabledata.id,
+                    residentname: data.field.residentname,
+                    doorid: data.field.doorid,
+                    sex: data.field.sex
+                },
+                dataType: "json", //返回数据形式为json
+                success: function (map) {
+
+                    layer.msg(map.data);
+                    layer.close(index2) //关闭弹窗
+                    getMap();
+                }
+            })
+            return false;
+        });
+        //按钮Btn3提交监听，查询指定用户出行信息
+        form.on('submit(***)', function (data) {
+            console.log(data)
+            var index = layer.msg('查询中，请稍候...', {
+                icon: 16,
+                time: false,
+                shade: 0
+            });
+            setTimeout(function () {
+                table.reload('triprecordtable', { //表格的id
+                    url: '/Smart_Building/user/getTriprecordList',
+                    where: {
+                        'residentname': data.field.searchresidentname
+                    }
+                });
+                layer.close(index); //关闭加载框
+            }, 200);
+
+            return false;
+        });
+
+        //获取住户信息，并显示于表格
+        function getMap() {
+            table.render({
+                elem: '#residenttable',
+                url: '/Smart_Building/user/getResidentList', //数据接口
+                title: '居民表',
+                toolbar: '#toolbarDemo', //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                page: true, //开启分页
+                limits: [5, 7, 10],
+                limit: 5, //每页默认显示的数量
+                cols: [[ //表头
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        sort: true,
+                    }
+                    , {
+                        field: 'residentname',
+                        title: '住户名',
+                    }
+                    , {
+                        field: 'doorid',
+                        title: '门禁ID',
+                    }
+                    , {
+                        field: 'sex',
+                        title: '性别',
+                    }
+                    , {
+                        fixed: 'right',
+                        align: 'center',
+                        title: '操作',
+                        toolbar: '#barDemo'
+                    }
+                ]]
+            });
+        }
+
+        getMap();
+
+        //获取住户出行信息，并显示于表格
+        function getrecordMap() {
+            table.render({
+                elem: '#triprecordtable',
+                url: '/Smart_Building/user/getTriprecordList', //数据接口
+                title: '居民外出表',
+                page: true, //开启分页
+                limits: [5, 7, 10],
+                limit: 5, //每页默认显示的数量
+                cols: [[ //表头
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        sort: true,
+                    }
+                    , {
+                        field: 'residentname',
+                        title: '住户名',
+                    }
+                    , {
+                        field: 'doorid',
+                        title: '门禁ID',
+                    }
+                    , {
+                        field: 'state',
+                        title: '状态',
+                    }
+                    , {
+                        field: 'time',
+                        title: '时间',
+                        templet: function (d) {
+                            return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+                        }
+                    }
+                ]]
+            });
+        }
+
+        getrecordMap();
+
+        var interval2;
+        clearInterval(interval2);
+        interval2 = setInterval(function () {
+            getrecordMap();
+            console.log(table.cache.triprecordtable[0].residentname) //显示最新人员出入情况
+            document.getElementById("welcome_text").innerHTML = table.cache.triprecordtable[0].residentname + ":" + table.cache.triprecordtable[0].state;
+        }, 10000);
+
+        //监听头工具栏事件
+        table.on('toolbar(test)', function (obj) {
+            switch (obj.event) {
+                case 'add':
+                    index1 = layer.open({
+                        title: '添加居民信息',
+                        type: 1,
+                        skin: 'layui-layer-rim',
+                        area: ['400px', '450px'],
+                        content: $('#test1111'),
+                        shadeClose: true, //点击遮罩关闭
+                        end: function () {
+                            setInterval_searchcard();
+                        }
+                    });
+                    document.all["Btn1"].style.display = "inline";
+                    document.all["Btn2"].style.display = "none";
+
+                    //初始赋值
+                    form.val('first', {
+                        'residentname': "",
+                        'doorid': "",
+                        'sex': "男",
+                    });
+                    clearInterval(interval);
+
+                    break;
+            }
+            ;
+        });
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+            tabledata = obj.data;
+            console.log(tabledata.id)
+            switch (obj.event) {
+                case 'edit':
+                    index2 = layer.open({
+                        title: '修改居民信息',
+                        type: 1,
+                        skin: 'layui-layer-rim',
+                        area: ['400px', '450px'],
+                        content: $('#test1111'),
+                        shadeClose: true, //点击遮罩关闭
+                        end: function () {
+                            setInterval_searchcard();
+                        }
+                    });
+                    document.all["Btn1"].style.display = "none";
+                    document.all["Btn2"].style.display = "inline";
+
+                    //初始赋值
+                    form.val('first', {
+                        'residentname': tabledata.residentname,
+                        'doorid': tabledata.doorid,
+                        'sex': tabledata.sex,
+                    });
+                    clearInterval(interval);
+
+                    break;
+                case "del":
+                    layer.confirm('真的要删除    ' + tabledata.residentname + "    的用户信息吗？", function (index) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Smart_Building/user/deleteResidentInfo',
+                            data: {
+                                id: tabledata.id,
+                            },
+                            dataType: "json", //返回数据形式为json
+                            success: function (map) {
+
+                                layer.msg(map.data);
+
+                            }
+                        })
+                        layer.close(index);
+                        getMap();
+                    });
+                    break;
+
+            }
+
+        });
+    })
+</script>
+<!-- 检测rfid卡号 -->
+<script type="text/javascript">
+    var interval;
+
+    function setInterval_searchcard() {
+        clearInterval(interval);
+        interval = setInterval("searchcard()", 2000)
+    }
+
+    setInterval_searchcard();
+
+    function searchcard() {
+        $.ajax({
+            type: 'POST',
+            url: '/Smart_Building/user/searchcard',
+            async: false,
+            dataType: "json", //返回数据形式为json
+            success: function (map) {
+                if (map.ID == "fail") {
+
+                } else {
+                    ID = map.ID;
+                    document.getElementById("doorid").value = ID;
+                }
+
+            }
+        });
+    }
+</script>
 </body>
 </html>

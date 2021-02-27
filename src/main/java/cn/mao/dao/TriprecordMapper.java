@@ -1,29 +1,28 @@
 package cn.mao.dao;
 
-import java.util.List;
-
+import cn.mao.pojo.Triprecord;
 import org.apache.ibatis.annotations.Param;
 
-import cn.mao.pojo.Triprecord;
+import java.util.List;
 
 public interface TriprecordMapper {
-	int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Integer id);
 
-	int insert(Triprecord triprecord);
+    int insert(Triprecord triprecord);
 
-	int insertSelective(Triprecord record);
+    int insertSelective(Triprecord record);
 
-	Triprecord selectByPrimaryKey(Integer id);
+    Triprecord selectByPrimaryKey(Integer id);
 
-	int updateByPrimaryKeySelective(Triprecord record);
+    int updateByPrimaryKeySelective(Triprecord record);
 
-	int updateByPrimaryKey(Triprecord record);
+    int updateByPrimaryKey(Triprecord record);
 
-	List<Triprecord> selectTriprecordAll();
+    List<Triprecord> selectTriprecordAll();
 
-	List<Triprecord> selectTriprecordAllByname(@Param("residentname") String residentname);
+    List<Triprecord> selectTriprecordAllByname(@Param("residentname") String residentname);
 
-	List<Triprecord> selectTriprecordByPage(@Param("page") int page, @Param("limit") int limit);
+    List<Triprecord> selectTriprecordByPage(@Param("page") int page, @Param("limit") int limit);
 
-	Triprecord selectByDoorid(@Param("doorid") String doorid);
+    Triprecord selectByDoorid(@Param("doorid") String doorid);
 }

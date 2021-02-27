@@ -1,505 +1,509 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<link rel="stylesheet" href="../assets/css/layui.css">
-<link rel="stylesheet" href="../assets/css/view.css" />
-<title></title>
-<script type="text/javascript" src="../js/jquery.js"></script>
-<script type="text/javascript" src="../js/highcharts.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="../assets/css/layui.css">
+    <link rel="stylesheet" href="../assets/css/view.css"/>
+    <title></title>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/highcharts.js"></script>
 
-<!-- 获取温湿度信息以显示于折线图 -->
-<script type="text/javascript">
+    <!-- 获取温湿度信息以显示于折线图 -->
+    <script type="text/javascript">
 
-	Highcharts.setOptions({
-		global : {
-			useUTC : false
-		}
-	}); //修改时区
-	var temp = [];
-	var humi = [];
-	var light = [];
-	var time = [];
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        }); //修改时区
+        var temp = [];
+        var humi = [];
+        var light = [];
+        var time = [];
 
-	var state;
-
-
-	var loadData = function() {
-
-		$.ajax({
-			type : 'POST',
-			url : '/Smart_Building/user/getSensorList',
-			async : false,
-			dataType : "json", //返回数据形式为json
-			success : function(map) {
-				if (map.data == "success") {
-					state = "success";
-				} else {
-					state = "fail";
-				}
-				var i;
-				temp = []; //重复获取时置空
-				time = [];
-				humi = [];
-				light = [];
-				len = map.list.length;
-				if (len > 10) {
-					for (i = len - 10; i < len; i++) {
-
-						temp.push(Number(map.list[i].temp));
-						humi.push(Number(map.list[i].humi));
-						light.push(Number(map.list[i].light));
-						time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(map.list[i].time)))
-
-					}
-				} else {
-					for (i = 0; i < len; i++) {
-
-						temp.push(Number(map.list[i].temp));
-						humi.push(Number(map.list[i].humi));
-						light.push(Number(map.list[i].light));
-						time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(map.list[i].time)))
-
-					}
-				}
-			},
-			error : function(xhr, status, error) {
-				layer.msg('请连接网络！');
-			}
-		});
-	}
-	loadData();
-</script>
+        var state;
 
 
-<!-- 画动态折线图 -->
-<script type="text/javascript">
+        var loadData = function () {
 
-	$(function() {
-		var chart = new Highcharts.Chart({
-			chart : {
-				renderTo : 'container',
-				type : 'spline',
-				events : {
-					load : function() {
-						setInterval(function() {
-							loadData();
-							var x,
-								y1,
-								y2;
-							if (state == "success") {
-								x = time[9]; //实时向末尾添加信息点     
-								y1 = temp[9];
-								y2 = humi[9];
-								console.log(x + "@" + y1 + "@" + y2)
-								chart.series[0].addPoint([ x, y1 ], true, true);
-								chart.series[1].addPoint([ x, y2 ], true, true);
-							}
+            $.ajax({
+                type: 'POST',
+                url: '/Smart_Building/user/getSensorList',
+                async: false,
+                dataType: "json", //返回数据形式为json
+                success: function (map) {
+                    if (map.data == "success") {
+                        state = "success";
+                    } else {
+                        state = "fail";
+                    }
+                    var i;
+                    temp = []; //重复获取时置空
+                    time = [];
+                    humi = [];
+                    light = [];
+                    len = map.list.length;
+                    if (len > 10) {
+                        for (i = len - 10; i < len; i++) {
 
-						}, 20000);
-					}
-				}
-			},
-			title : {
-				text : '温湿度折线图'
-			},
-			subtitle : {
-				text : '智能楼宇安防'
-			},
-			xAxis : {
-				categories : time
-			},
-			yAxis : {
-				title : {
-					text : '温度 (°C)/湿度(%RH)'
-				}
-			},
-			tooltip : {
-				formatter : function() {
-					return '<b>' + this.series.name + '</b><br/>' +
-						'<b>' + this.x + '</b><br/>' +
-						Highcharts.numberFormat(this.y, 1);
-				}
-			},
-			plotOptions : {
-				line : {
-					dataLabels : {
-						enabled : true // 开启数据标签
-					},
-					enableMouseTracking : true // 关闭鼠标跟踪，对应的提示框、点击事件会失效
-				}
-			},
-			legend : {
-				enabled : true
-			},
-			exporting : {
-				enabled : false
-			},
-			series : [ {
-				name : '温度(°C)',
-				data : temp
-			}, {
-				name : '湿度(%RH)',
-				data : humi
-			} ]
-		});
-	});
-</script>
+                            temp.push(Number(map.list[i].temp));
+                            humi.push(Number(map.list[i].humi));
+                            light.push(Number(map.list[i].light));
+                            time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(map.list[i].time)))
+
+                        }
+                    } else {
+                        for (i = 0; i < len; i++) {
+
+                            temp.push(Number(map.list[i].temp));
+                            humi.push(Number(map.list[i].humi));
+                            light.push(Number(map.list[i].light));
+                            time.push(Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', Number(map.list[i].time)))
+
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    layer.msg('请连接网络！');
+                }
+            });
+        }
+        loadData();
+    </script>
+
+
+    <!-- 画动态折线图 -->
+    <script type="text/javascript">
+
+        $(function () {
+            var chart = new Highcharts.Chart({
+                chart: {
+                    renderTo: 'container',
+                    type: 'spline',
+                    events: {
+                        load: function () {
+                            setInterval(function () {
+                                loadData();
+                                var x,
+                                    y1,
+                                    y2;
+                                if (state == "success") {
+                                    x = time[9]; //实时向末尾添加信息点
+                                    y1 = temp[9];
+                                    y2 = humi[9];
+                                    console.log(x + "@" + y1 + "@" + y2)
+                                    chart.series[0].addPoint([x, y1], true, true);
+                                    chart.series[1].addPoint([x, y2], true, true);
+                                }
+
+                            }, 20000);
+                        }
+                    }
+                },
+                title: {
+                    text: '温湿度折线图'
+                },
+                subtitle: {
+                    text: '智能楼宇安防'
+                },
+                xAxis: {
+                    categories: time
+                },
+                yAxis: {
+                    title: {
+                        text: '温度 (°C)/湿度(%RH)'
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            '<b>' + this.x + '</b><br/>' +
+                            Highcharts.numberFormat(this.y, 1);
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true // 开启数据标签
+                        },
+                        enableMouseTracking: true // 关闭鼠标跟踪，对应的提示框、点击事件会失效
+                    }
+                },
+                legend: {
+                    enabled: true
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: '温度(°C)',
+                    data: temp
+                }, {
+                    name: '湿度(%RH)',
+                    data: humi
+                }]
+            });
+        });
+    </script>
 
 </head>
 <body class="layui-view-body">
-	<div class="layui-content">
-		<div class="layui-row layui-col-space20">
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>温度</span>
-								</div>
-								<div class="total">
-									<span id="temp" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>湿度</span>
-								</div>
-								<div class="total">
-									<span id="humi" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>光照度</span>
-								</div>
-								<div class="total">
-									<span id="light" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>灯</span>
-								</div>
-								<div class="total">
-									<span id="lamp_text" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>空调</span>
-								</div>
-								<div class="total">
-									<span id="air_text" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>加湿器</span>
-								</div>
-								<div class="total">
-									<span id="alarm_text" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm6 layui-col-md2">
-				<div class="layui-card">
-					<div class="layui-card-body chart-card">
-						<div class="chart-header">
-							<div class="metawrap">
-								<div class="meta">
-									<span>门</span>
-								</div>
-								<div class="total">
-									<span id="door_text" style="font-size:24px">未获取</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="layui-col-sm12 layui-col-md12">
-				<div class="layui-card">
-					<div class="layui-tab layui-tab-brief" lay-filter="tabfilter">
-						<ul class="layui-tab-title">
-							<li class="layui-this">实时数据</li>
-							<li>实时曲线</li>
-						</ul>
-						<div class="layui-tab-content">
-							<div class="layui-tab-item layui-show">
-								<button class="layui-btn layui-btn-radius layui-btn-normal"
-									onclick="Lamp_click()">
-									<span id="lamp_btn">灯开关</span>
-								</button>
-								<button class="layui-btn layui-btn-radius layui-btn-normal"
-									onclick="Air_click()">
-									<span id="air_btn">空调开关</span>
-								</button>
-								<button class="layui-btn layui-btn-radius layui-btn-normal"
-									onclick="Door_click()">
-									<span id="door_btn">门开关</span>
-								</button>
-								<!-- 表格调用 -->
-								<table id="sensortable"></table>
-							</div>
-							<div class="layui-tab-item">
-								<!-- 折线图调用 -->
-								<div id="container"
-									style="width:1000px;height:400px;margin:0 auto;"></div>
-								<div style="text-align:center;clear:both;"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script src="../assets/layui.all.js"></script>
-	<script>
-		var element = layui.element;
-		var table = layui.table;
-		var util = layui.util;
-	
-		//切换tab时重新加载table
-		element.on('tab(tabfilter)', function(data) {
-			//console.log(this); //当前Tab标题所在的原始DOM元素
-			console.log(data.index); //得到当前Tab的所在下标
-			//console.log(data.elem); //得到当前的Tab大容器
-			if (data.index == "0") {
-				getMap();
-			}
-		});
-	
-		//展示已知数据于表格,并定时刷新
-		function getMap() {
-			table.render({
-				elem : '#sensortable',
-				url : '/Smart_Building/user/getSensorMap',
-				cols : [ [ //标题栏
-					{
-						field : 'id',
-						title : 'ID',
-						sort : true
-					}
-					, {
-						field : 'temp',
-						title : '温度',
-					}
-					, {
-						field : 'humi',
-						title : '湿度',
-					}
-					, {
-						field : 'light',
-						title : '光照度',
-					}
-					, {
-						field : 'time',
-						title : '时间',
-						templet : function(d) {
-							return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
-						}
-					}
-				] ],
-				skin : 'line', //表格风格
-				even : true,
-				page : true, //是否显示分页
-				limits : [ 5, 7, 10 ],
-				limit : 5 //每页默认显示的数量
-			});
-		}
-		getMap();
-		setInterval(function() {
-			loadData();
-			getMap();
-			if (len > 10) {
-				document.getElementById('temp').innerHTML = temp[9] + "℃";
-				document.getElementById('humi').innerHTML = humi[9] + "%";
-				document.getElementById('light').innerHTML = light[9];
-			} else {
-				document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
-				document.getElementById('humi').innerHTML = humi[len - 1] + "%";
-				document.getElementById('light').innerHTML = light[len - 1];
-			}
-		}, 20000); //定时刷新温湿度显示和温湿度信息表格
-	</script>
-	<script type="text/javascript">
-		if (len > 10) {
-			document.getElementById('temp').innerHTML = temp[9] + "℃";
-			document.getElementById('humi').innerHTML = humi[9] + "%";
-			document.getElementById('light').innerHTML = light[9];
-		} else {
-			document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
-			document.getElementById('humi').innerHTML = humi[len - 1] + "%";
-			document.getElementById('light').innerHTML = light[len - 1];
-		}
-	</script>
+<div class="layui-content">
+    <div class="layui-row layui-col-space20">
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>温度</span>
+                            </div>
+                            <div class="total">
+                                <span id="temp" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>湿度</span>
+                            </div>
+                            <div class="total">
+                                <span id="humi" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>光照度</span>
+                            </div>
+                            <div class="total">
+                                <span id="light" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>灯</span>
+                            </div>
+                            <div class="total">
+                                <span id="lamp_text" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>空调</span>
+                            </div>
+                            <div class="total">
+                                <span id="air_text" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>加湿器</span>
+                            </div>
+                            <div class="total">
+                                <span id="alarm_text" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-body chart-card">
+                    <div class="chart-header">
+                        <div class="metawrap">
+                            <div class="meta">
+                                <span>门</span>
+                            </div>
+                            <div class="total">
+                                <span id="door_text" style="font-size:24px">未获取</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm12 layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-tab layui-tab-brief" lay-filter="tabfilter">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">实时数据</li>
+                        <li>实时曲线</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <button class="layui-btn layui-btn-radius layui-btn-normal"
+                                    onclick="Lamp_click()">
+                                <span id="lamp_btn">灯开关</span>
+                            </button>
+                            <button class="layui-btn layui-btn-radius layui-btn-normal"
+                                    onclick="Air_click()">
+                                <span id="air_btn">空调开关</span>
+                            </button>
+                            <button class="layui-btn layui-btn-radius layui-btn-normal"
+                                    onclick="Door_click()">
+                                <span id="door_btn">门开关</span>
+                            </button>
+                            <!-- 表格调用 -->
+                            <table id="sensortable"></table>
+                        </div>
+                        <div class="layui-tab-item">
+                            <!-- 折线图调用 -->
+                            <div id="container"
+                                 style="width:1000px;height:400px;margin:0 auto;"></div>
+                            <div style="text-align:center;clear:both;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/layui.all.js"></script>
+<script>
+    var element = layui.element;
+    var table = layui.table;
+    var util = layui.util;
 
-	<!-- 定时刷新局部信息 -->
-	<script type="text/javascript">
-		setInterval("getData()", 1000);
-		var lamp_control,
-			air_control,
-			alarm_control,
-			door_control;
-		var human,
-			smoke,
-			lamp,
-			air,
-			alarm,
-			door;
-		function getData() {
-			$.ajax({
-				type : 'POST',
-				url : '/Smart_Building/user/getRealtimedata',
-				async : false,
-				dataType : "json", //返回数据形式为json
-				success : function(map) {
-					var i;
-					lamp = map.lamp;
-					air = map.air;
-					alarm = map.alarm;
-					door = map.door;
-				}
-			});
-	
-			if (lamp == "1") {
-				document.getElementById('lamp_text').innerHTML = "运行中";
-				document.getElementById('lamp_btn').innerHTML = "关闭灯";
-				lamp_control = "0";
-			} else if (lamp == "0") {
-				document.getElementById('lamp_text').innerHTML = "关闭中";
-				document.getElementById('lamp_btn').innerHTML = "打开灯";
-				lamp_control = "1";
-			}
-			if (air == "1") {
-				document.getElementById('air_text').innerHTML = "运行中";
-				document.getElementById('air_btn').innerHTML = "关闭空调";
-				air_control = "0";
-			} else if (air == "0") {
-				document.getElementById('air_text').innerHTML = "关闭中";
-				document.getElementById('air_btn').innerHTML = "打开空调";
-				air_control = "1";
-			}
-			if (door == "1") {
-				document.getElementById('door_text').innerHTML = "运行中";
-				document.getElementById('door_btn').innerHTML = "关闭门";
-				door_control = "0";
-			} else if (door == "0") {
-				document.getElementById('door_text').innerHTML = "关闭中";
-				document.getElementById('door_btn').innerHTML = "打开门";
-				door_control = "1";
-			}
-		}
-	</script>
+    //切换tab时重新加载table
+    element.on('tab(tabfilter)', function (data) {
+        //console.log(this); //当前Tab标题所在的原始DOM元素
+        console.log(data.index); //得到当前Tab的所在下标
+        //console.log(data.elem); //得到当前的Tab大容器
+        if (data.index == "0") {
+            getMap();
+        }
+    });
 
-	<!-- 开关点击事件 -->
-	<script type="text/javascript">
-		function Lamp_click() {
-			$.ajax({
-				type : 'POST',
-				url : '/Smart_Building/user/Sensorcontrol',
-				data : {
-					lamp : lamp_control,
-					air : air,
-					alarm : alarm,
-					door : door
-				},
-				dataType : "json", //返回数据形式为json
-				success : function(map) {
-					if (map.data == "success") {
-						layer.msg(map.data);
-					} else {
-						layer.msg("请连接串口" + map.data);
-					}
-				},
-			});
-		}
-		function Air_click() {
-			$.ajax({
-				type : 'POST',
-				url : '/Smart_Building/user/Sensorcontrol',
-				data : {
-					lamp : lamp,
-					air : air_control,
-					alarm : alarm,
-					door : door
-				},
-				dataType : "json", //返回数据形式为json
-				success : function(map) {
-					if (map.data == "success") {
-						layer.msg(map.data);
-					} else {
-						layer.msg("请连接串口" + map.data);
-					}
-				},
-			});
-		}
-		function Door_click() {
-			$.ajax({
-				type : 'POST',
-				url : '/Smart_Building/user/Sensorcontrol',
-				data : {
-					lamp : lamp,
-					air : air,
-					alarm : alarm,
-					door : door_control
-				},
-				dataType : "json", //返回数据形式为json
-				success : function(map) {
-					if (map.data == "success") {
-						layer.msg(map.data);
-					} else {
-						layer.msg("请连接串口" + map.data);
-					}
-				},
-			});
-		}
-	</script>
+    //展示已知数据于表格,并定时刷新
+    function getMap() {
+        table.render({
+            elem: '#sensortable',
+            url: '/Smart_Building/user/getSensorMap',
+            cols: [[ //标题栏
+                {
+                    field: 'id',
+                    title: 'ID',
+                    sort: true
+                }
+                , {
+                    field: 'temp',
+                    title: '温度',
+                }
+                , {
+                    field: 'humi',
+                    title: '湿度',
+                }
+                , {
+                    field: 'light',
+                    title: '光照度',
+                }
+                , {
+                    field: 'time',
+                    title: '时间',
+                    templet: function (d) {
+                        return util.toDateString(d.time, "yyyy-MM-dd HH:mm:ss");
+                    }
+                }
+            ]],
+            skin: 'line', //表格风格
+            even: true,
+            page: true, //是否显示分页
+            limits: [5, 7, 10],
+            limit: 5 //每页默认显示的数量
+        });
+    }
+
+    getMap();
+    setInterval(function () {
+        loadData();
+        getMap();
+        if (len > 10) {
+            document.getElementById('temp').innerHTML = temp[9] + "℃";
+            document.getElementById('humi').innerHTML = humi[9] + "%";
+            document.getElementById('light').innerHTML = light[9];
+        } else {
+            document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
+            document.getElementById('humi').innerHTML = humi[len - 1] + "%";
+            document.getElementById('light').innerHTML = light[len - 1];
+        }
+    }, 20000); //定时刷新温湿度显示和温湿度信息表格
+</script>
+<script type="text/javascript">
+    if (len > 10) {
+        document.getElementById('temp').innerHTML = temp[9] + "℃";
+        document.getElementById('humi').innerHTML = humi[9] + "%";
+        document.getElementById('light').innerHTML = light[9];
+    } else {
+        document.getElementById('temp').innerHTML = temp[len - 1] + "℃";
+        document.getElementById('humi').innerHTML = humi[len - 1] + "%";
+        document.getElementById('light').innerHTML = light[len - 1];
+    }
+</script>
+
+<!-- 定时刷新局部信息 -->
+<script type="text/javascript">
+    setInterval("getData()", 1000);
+    var lamp_control,
+        air_control,
+        alarm_control,
+        door_control;
+    var human,
+        smoke,
+        lamp,
+        air,
+        alarm,
+        door;
+
+    function getData() {
+        $.ajax({
+            type: 'POST',
+            url: '/Smart_Building/user/getRealtimedata',
+            async: false,
+            dataType: "json", //返回数据形式为json
+            success: function (map) {
+                var i;
+                lamp = map.lamp;
+                air = map.air;
+                alarm = map.alarm;
+                door = map.door;
+            }
+        });
+
+        if (lamp == "1") {
+            document.getElementById('lamp_text').innerHTML = "运行中";
+            document.getElementById('lamp_btn').innerHTML = "关闭灯";
+            lamp_control = "0";
+        } else if (lamp == "0") {
+            document.getElementById('lamp_text').innerHTML = "关闭中";
+            document.getElementById('lamp_btn').innerHTML = "打开灯";
+            lamp_control = "1";
+        }
+        if (air == "1") {
+            document.getElementById('air_text').innerHTML = "运行中";
+            document.getElementById('air_btn').innerHTML = "关闭空调";
+            air_control = "0";
+        } else if (air == "0") {
+            document.getElementById('air_text').innerHTML = "关闭中";
+            document.getElementById('air_btn').innerHTML = "打开空调";
+            air_control = "1";
+        }
+        if (door == "1") {
+            document.getElementById('door_text').innerHTML = "运行中";
+            document.getElementById('door_btn').innerHTML = "关闭门";
+            door_control = "0";
+        } else if (door == "0") {
+            document.getElementById('door_text').innerHTML = "关闭中";
+            document.getElementById('door_btn').innerHTML = "打开门";
+            door_control = "1";
+        }
+    }
+</script>
+
+<!-- 开关点击事件 -->
+<script type="text/javascript">
+    function Lamp_click() {
+        $.ajax({
+            type: 'POST',
+            url: '/Smart_Building/user/Sensorcontrol',
+            data: {
+                lamp: lamp_control,
+                air: air,
+                alarm: alarm,
+                door: door
+            },
+            dataType: "json", //返回数据形式为json
+            success: function (map) {
+                if (map.data == "success") {
+                    layer.msg(map.data);
+                } else {
+                    layer.msg("请连接串口" + map.data);
+                }
+            },
+        });
+    }
+
+    function Air_click() {
+        $.ajax({
+            type: 'POST',
+            url: '/Smart_Building/user/Sensorcontrol',
+            data: {
+                lamp: lamp,
+                air: air_control,
+                alarm: alarm,
+                door: door
+            },
+            dataType: "json", //返回数据形式为json
+            success: function (map) {
+                if (map.data == "success") {
+                    layer.msg(map.data);
+                } else {
+                    layer.msg("请连接串口" + map.data);
+                }
+            },
+        });
+    }
+
+    function Door_click() {
+        $.ajax({
+            type: 'POST',
+            url: '/Smart_Building/user/Sensorcontrol',
+            data: {
+                lamp: lamp,
+                air: air,
+                alarm: alarm,
+                door: door_control
+            },
+            dataType: "json", //返回数据形式为json
+            success: function (map) {
+                if (map.data == "success") {
+                    layer.msg(map.data);
+                } else {
+                    layer.msg("请连接串口" + map.data);
+                }
+            },
+        });
+    }
+</script>
 </body>
 </html>
