@@ -1,9 +1,9 @@
 package cn.mao.sensor;
 
 import cn.mao.pojo.Resident;
-import cn.mao.pojo.Triprecord;
+import cn.mao.pojo.TripRecord;
 import cn.mao.service.ResidentService;
-import cn.mao.service.TriprecordService;
+import cn.mao.service.TripRecordService;
 import cn.mao.util.ApplicationContextHelper;
 import cn.mao.util.CharFormatUtil;
 import gnu.io.*;
@@ -17,7 +17,7 @@ import java.util.TooManyListenersException;
 
 public class Rxtx_Rfid implements SerialPortEventListener {
 
-    private TriprecordService triprecordService;
+    private TripRecordService triprecordService;
     private ResidentService residentService;
 
     private static final String DEMONAME = "RFID串口";
@@ -79,10 +79,7 @@ public class Rxtx_Rfid implements SerialPortEventListener {
 
     /**
      * 初始化串口
-     *
-     * @param baudRate 波特率
      */
-
     public void init() {
         if (serialPort != null) {
             closeSerialPort();
@@ -226,31 +223,31 @@ public class Rxtx_Rfid implements SerialPortEventListener {
     /**
      * 添加出行记录到数据库
      *
-     * @param doorid
+     * @param doorId
      */
-    public void addRecord(String doorid) {
-        triprecordService = ApplicationContextHelper.getBean(TriprecordService.class);
+    public void addRecord(String doorId) {
+        triprecordService = ApplicationContextHelper.getBean(TripRecordService.class);
         residentService = ApplicationContextHelper.getBean(ResidentService.class);
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        long nowtime = timestamp.getTime();
+        long nowTime = timestamp.getTime();
 
-        // 查询出行记录表doorid状态
-        Triprecord triprecordold = triprecordService.getTriprecordByDoorid(doorid);
+        // 查询出行记录表doorId状态
+        TripRecord tripRecordByDoorId = triprecordService.getTripRecordByDoorId(doorId);
 
-        Triprecord triprecordnew = new Triprecord();
+        TripRecord tripRecordNew = new TripRecord();
 
-        // 查询是否有doorid
-        Resident resident = residentService.getResidentByDoorid(doorid);
+        // 查询是否有 doorId
+        Resident resident = residentService.getResidentByDoorid(doorId);
 
-        if (triprecordold == null) {
+        if (tripRecordByDoorId == null) {
             if (resident == null) {
                 System.out.println("没有此住户，请录入住户信息");
             } else {
-                triprecordnew.setResidentname(resident.getResidentname());
-                triprecordnew.setDoorid(resident.getDoorid());
-                triprecordnew.setState("在家");
-                triprecordnew.setTime(timestamp);
+                tripRecordNew.setResidentname(resident.getResidentname());
+                tripRecordNew.setDoorid(resident.getDoorid());
+                tripRecordNew.setState("在家");
+                tripRecordNew.setTime(timestamp);
             }
 
         } else {
@@ -263,28 +260,28 @@ public class Rxtx_Rfid implements SerialPortEventListener {
              * System.out.println(date+"@"+value+"@"+triprecordold.getTime()+"@"
              * ); } catch (ParseException e) { e.printStackTrace(); }
              */
-            Date oldDate = new Timestamp(triprecordold.getTime().getTime());
-            long oldtime = oldDate.getTime();
+            Date oldDate = new Timestamp(tripRecordByDoorId.getTime().getTime());
+            long oldTime = oldDate.getTime();
 
-            System.out.println(nowtime - oldtime);
+            System.out.println(nowTime - oldTime);
 
-            if ((nowtime - oldtime) / 1000 < 10) {
+            if ((nowTime - oldTime) / 1000 < 10) {
                 System.out.println("此时间段禁止读卡！");
             } else {
-                triprecordnew.setResidentname(triprecordold.getResidentname());
-                triprecordnew.setDoorid(triprecordold.getDoorid());
-                if (triprecordold.getState().equals("在家")) {
-                    triprecordnew.setState("外出");
+                tripRecordNew.setResidentname(tripRecordByDoorId.getResidentname());
+                tripRecordNew.setDoorid(tripRecordByDoorId.getDoorid());
+                if (tripRecordByDoorId.getState().equals("在家")) {
+                    tripRecordNew.setState("外出");
                 } else {
-                    triprecordnew.setState("在家");
+                    tripRecordNew.setState("在家");
                 }
-                triprecordnew.setTime(timestamp);
+                tripRecordNew.setTime(timestamp);
             }
         }
         // 添加新出行记录
-        triprecordService.addTriprecord(triprecordnew);
+        triprecordService.addTripRecord(tripRecordNew);
 
-        System.out.println("添加出行记录成功" + doorid);
+        System.out.println("添加出行记录成功" + doorId);
 
     }
 }

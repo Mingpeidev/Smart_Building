@@ -2,7 +2,7 @@ package cn.mao.pojo;
 
 import java.util.Date;
 
-public class Triprecord {
+public class TripRecord {
     private Integer id;
 
     private String residentname;

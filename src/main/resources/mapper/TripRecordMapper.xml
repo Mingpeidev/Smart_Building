@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.mao.dao.TriprecordMapper">
-    <resultMap id="BaseResultMap" type="cn.mao.pojo.Triprecord">
+<mapper namespace="cn.mao.dao.TripRecordMapper">
+    <resultMap id="BaseResultMap" type="cn.mao.pojo.TripRecord">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="residentname" jdbcType="VARCHAR" property="residentname"/>
         <result column="doorid" jdbcType="VARCHAR" property="doorid"/>
@@ -23,7 +23,7 @@
 		triprecord
 		where id = #{id,jdbcType=INTEGER}
 	</delete>
-    <insert id="insert" parameterType="cn.mao.pojo.Triprecord">
+    <insert id="insert" parameterType="cn.mao.pojo.TripRecord">
 		insert into triprecord (id,
 		residentname, doorid,
 		state, time)
@@ -32,7 +32,7 @@
 		#{doorid,jdbcType=VARCHAR},
 		#{state,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP})
 	</insert>
-    <insert id="insertSelective" parameterType="cn.mao.pojo.Triprecord">
+    <insert id="insertSelective" parameterType="cn.mao.pojo.TripRecord">
         insert into triprecord
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -69,7 +69,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="cn.mao.pojo.Triprecord">
+    <update id="updateByPrimaryKeySelective" parameterType="cn.mao.pojo.TripRecord">
         update triprecord
         <set>
             <if test="residentname != null">
@@ -87,7 +87,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="cn.mao.pojo.Triprecord">
+    <update id="updateByPrimaryKey" parameterType="cn.mao.pojo.TripRecord">
 		update triprecord
 		set residentname = #{residentname,jdbcType=VARCHAR},
 		doorid =
@@ -97,26 +97,25 @@
 		#{time,jdbcType=TIMESTAMP}
 		where id = #{id,jdbcType=INTEGER}
 	</update>
-    <select id="selectTriprecordAll" parameterType="java.util.List"
+    <select id="selectTripRecordAll" parameterType="java.util.List"
             resultMap="BaseResultMap">
 		select * from triprecord where id!=""
 	</select>
 
-    <select id="selectTriprecordAllByname" parameterType="java.util.List"
+    <select id="selectTripRecordAllByName" parameterType="java.util.List"
             resultMap="BaseResultMap">
-		select * from triprecord where residentname=#{residentname}
+		select * from triprecord where residentname=#{residentName}
 		order by id desc
 	</select>
 
-    <select id="selectTriprecordByPage" resultMap="BaseResultMap">
+    <select id="selectTripRecordByPage" resultMap="BaseResultMap">
 		select * from
 		triprecord
 		order by id desc limit #{page},#{limit}
 	</select>
 
-    <select id="selectByDoorid" parameterType="String" resultMap="BaseResultMap">
-		select * from triprecord where doorid=#{doorid}
-		order by id desc limit
-		0,1
+    <select id="selectByDoorId" parameterType="String" resultMap="BaseResultMap">
+		select * from triprecord where doorid=#{doorId}
+		order by id desc limit 0,1
 	</select>
 </mapper>

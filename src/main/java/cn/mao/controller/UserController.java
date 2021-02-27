@@ -1,8 +1,8 @@
 package cn.mao.controller;
 
+import cn.mao.pojo.User;
 import cn.mao.sensor.Rxtx_Rfid;
 import cn.mao.sensor.Rxtx_sensor;
-import cn.mao.pojo.User;
 import cn.mao.service.UserService;
 import cn.mao.util.SsmResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +20,15 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-
 public class UserController {
 
     @Autowired
-    private UserService userServivce;
-    Map<String, Object> loginmap = new HashMap<String, Object>();
-
+    private UserService userService;
+    Map<String, Object> loginMap = new HashMap<String, Object>();
     /**
-     * 电脑端
+     * 测试标志位
      */
+    private static final boolean TEST_FLAG = false;
 
     /**
      * 正常访问login页面
@@ -38,6 +37,10 @@ public class UserController {
      */
     @RequestMapping("/login")
     public String login() {
+
+        if (TEST_FLAG) {
+            return "login";
+        }
 
         if (Rxtx_sensor.judgelink() == null) {
             System.out.println("开启传感器串口！电脑");
@@ -62,9 +65,9 @@ public class UserController {
      *
      * @return
      */
-    @RequestMapping("/smartset")
-    public String smart() {
-        return "smartset";
+    @RequestMapping("/smartSet")
+    public String smartSet() {
+        return "smart_set";
     }
 
     /**
@@ -72,9 +75,9 @@ public class UserController {
      *
      * @return
      */
-    @RequestMapping("/modifypsd")
-    public String modifypsd() {
-        return "modifypsd";
+    @RequestMapping("/modifyPsd")
+    public String modifyPsd() {
+        return "modify_psd";
     }
 
     /**
@@ -84,6 +87,11 @@ public class UserController {
      */
     @RequestMapping("/door")
     public String door() {
+
+        if (TEST_FLAG) {
+            return "door";
+        }
+
         if (Rxtx_Rfid.judgelink() == null) {
             System.out.println("开启rfid串口");
             Rxtx_Rfid rfid = new Rxtx_Rfid();
@@ -125,16 +133,24 @@ public class UserController {
     @RequestMapping("/checkLogin")
     @ResponseBody
     public Map<String, Object> checkLogin(@RequestParam("username") String username,
-                                          @RequestParam("password") String password, HttpSession session, HttpServletRequest request,
+                                          @RequestParam("password") String password,
+                                          HttpSession session,
+                                          HttpServletRequest request,
                                           HttpServletResponse response) {
         // 调用service方法
-        loginmap.clear();
+        loginMap.clear();
 
         try {
-            User user = userServivce.checkLogin(username, password);
+            User user = new User();
+            if (TEST_FLAG) {
+                user.setUsername("mao");
+                user.setPassword("123456");
+            } else {
+                user = userService.checkLogin(username, password);
+            }
 
             if (user != null) {
-                loginmap.put("msg", "1");
+                loginMap.put("msg", "1");
                 session.setAttribute("user", user);
 
                 Cookie ck = new Cookie("username", username);
@@ -144,14 +160,14 @@ public class UserController {
                 response.addCookie(ck);
 
             } else {
-                loginmap.put("msg", "用户名或密码错误，请重新登陆！");
+                loginMap.put("msg", "用户名或密码错误，请重新登陆！");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            loginmap.put("msg", e.getMessage());
+            loginMap.put("msg", e.getMessage());
         }
 
-        return loginmap;
+        return loginMap;
     }
 
     /**
@@ -163,17 +179,17 @@ public class UserController {
     @RequestMapping("/judgeLogin")
     @ResponseBody
     public Map<String, Object> judgeLogin(HttpSession session) {
-        Map<String, Object> judgemap = new HashMap<String, Object>();
+        Map<String, Object> judgeMap = new HashMap<String, Object>();
 
         User user = (User) session.getAttribute("user");
 
         if (user != null) {
-            judgemap.put("logininfo", user.getUsername());
+            judgeMap.put("logininfo", user.getUsername());
         } else {
-            judgemap.put("logininfo", "fail");
+            judgeMap.put("logininfo", "fail");
         }
 
-        return judgemap;
+        return judgeMap;
     }
 
     /**
@@ -182,21 +198,21 @@ public class UserController {
      * @param user
      * @return
      */
-    @RequestMapping("/doregis")
+    @RequestMapping("/register")
     @ResponseBody
-    public Map<String, Object> doregis(User user) {
-        Map<String, Object> registermap = new HashMap<String, Object>();
+    public Map<String, Object> register(User user) {
+        Map<String, Object> registerMap = new HashMap<String, Object>();
 
         if (user.getUsername().length() < 2 || user.getPassword().length() < 6) {
-            registermap.put("data", "格式不对");
-        } else if (userServivce.judge(user) == "yes") {
-            userServivce.register(user);
-            registermap.put("data", "success");
+            registerMap.put("data", "格式不对");
+        } else if (userService.judge(user) == "yes") {
+            userService.register(user);
+            registerMap.put("data", "success");
         } else {
-            registermap.put("data", "fail");
+            registerMap.put("data", "fail");
         }
 
-        return registermap;
+        return registerMap;
     }
 
     /**
@@ -207,7 +223,7 @@ public class UserController {
      */
     @RequestMapping("/outLogin")
     public String outLogin(HttpSession session) {
-        // 通过session.invalidata()方法来注销当前的session
+        // 通过session.invalidate()方法来注销当前的session
         session.invalidate();
 
         return "login";
@@ -224,25 +240,23 @@ public class UserController {
     @RequestMapping("/updatePassword")
     @ResponseBody
     public Map<String, Object> updatePassword(@RequestParam("username") String username,
-                                              @RequestParam("password") String password, @RequestParam("password1") String password1) {
+                                              @RequestParam("password") String password,
+                                              @RequestParam("password1") String password1) {
         // 调用service方法
-        Map<String, Object> updatemap = new HashMap<String, Object>();
+        Map<String, Object> updateMap = new HashMap<String, Object>();
 
-        User user = userServivce.checkLogin(username, password);
+        User user = userService.checkLogin(username, password);
 
         if (user != null) {
-            userServivce.updatePassword(username, password1);
-            updatemap.put("msg", "success");
+            userService.updatePassword(username, password1);
+            updateMap.put("msg", "success");
         } else {
-            updatemap.put("msg", "fail");
+            updateMap.put("msg", "fail");
         }
 
-        return updatemap;
+        return updateMap;
     }
 
-    /**
-     * 手机端
-     */
     /**
      * 手机端登录
      *
@@ -250,11 +264,11 @@ public class UserController {
      * @param password
      * @return
      */
-    @RequestMapping("/logininphone")
+    @RequestMapping("/loginInPhone")
     @ResponseBody
-    public SsmResult logininphone(@RequestParam("username") String username,
+    public SsmResult loginInPhone(@RequestParam("username") String username,
                                   @RequestParam("password") String password) {
-        User user = userServivce.checkLogin(username, password);
+        User user = userService.checkLogin(username, password);
         if (user != null) {
             return SsmResult.ok(1);
         } else {
@@ -269,9 +283,9 @@ public class UserController {
      * @param password
      * @return
      */
-    @RequestMapping("/registerinphone")
+    @RequestMapping("/registerInPhone")
     @ResponseBody
-    public SsmResult registerinphone(@RequestParam("username") String username,
+    public SsmResult registerInPhone(@RequestParam("username") String username,
                                      @RequestParam("password") String password) {
 
         User user = new User();
@@ -279,8 +293,8 @@ public class UserController {
         user.setUsername(username);
         user.setPassword(password);
 
-        if (userServivce.judge(user) == "yes") {
-            userServivce.register(user);
+        if (userService.judge(user) == "yes") {
+            userService.register(user);
             return SsmResult.ok(1);
         } else {
             return SsmResult.ok(0);

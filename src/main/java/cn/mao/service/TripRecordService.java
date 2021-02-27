@@ -1,16 +1,16 @@
 package cn.mao.service;
 
-import cn.mao.pojo.Triprecord;
+import cn.mao.pojo.TripRecord;
 
 import java.util.List;
 
-public interface TriprecordService {
+public interface TripRecordService {
     /**
      * 获取所有居民出行信息
      *
      * @return
      */
-    public List<Triprecord> getTriprecordAll();
+    public List<TripRecord> getTripRecordAll();
 
     /**
      * 分页显示在表格
@@ -19,29 +19,29 @@ public interface TriprecordService {
      * @param limit
      * @return
      */
-    public List<Triprecord> getTriprecordByPage(int page, int limit);
+    public List<TripRecord> getTripRecordByPage(int page, int limit);
 
     /**
      * 按住户名字查找住户出行记录
      *
-     * @param residentname
+     * @param residentName
      * @return
      */
-    public List<Triprecord> getTriprecordAllByname(String residentname);
+    public List<TripRecord> getTripRecordAllByName(String residentName);
 
     /**
      * 添加出行记录
      *
-     * @param triprecord
+     * @param tripRecord
      */
-    public void addTriprecord(Triprecord triprecord);
+    public void addTripRecord(TripRecord tripRecord);
 
     /**
      * 查询最新一条出行记录
      *
-     * @param doorid
+     * @param doorId
      * @return
      */
-    public Triprecord getTriprecordByDoorid(String doorid);
+    public TripRecord getTripRecordByDoorId(String doorId);
 
 }

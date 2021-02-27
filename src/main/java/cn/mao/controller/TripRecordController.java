@@ -1,7 +1,7 @@
 package cn.mao.controller;
 
-import cn.mao.pojo.Triprecord;
-import cn.mao.service.TriprecordService;
+import cn.mao.pojo.TripRecord;
+import cn.mao.service.TripRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +13,10 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-public class TriprecordController {
+public class TripRecordController {
 
     @Autowired
-    private TriprecordService triprecordService;
+    private TripRecordService tripRecordService;
 
     /**
      * 分页获取出行信息表，并可按住户名查询此住户出行记录
@@ -25,13 +25,13 @@ public class TriprecordController {
      */
     @RequestMapping("/getTriprecordList")
     @ResponseBody
-    public Map<String, Object> getTriprecordList(int page, int limit, String residentname) {
+    public Map<String, Object> getTriprecordList(int page, int limit, String residentName) {
         Map<String, Object> map = new HashMap<String, Object>();
 
-        if (residentname != null && residentname != "") {
+        if (residentName != null && residentName != "") {
 
-            System.out.println("查询居民" + residentname + "的出行信息");
-            List<Triprecord> list = triprecordService.getTriprecordAllByname(residentname);
+            System.out.println("查询居民" + residentName + "的出行信息");
+            List<TripRecord> list = tripRecordService.getTripRecordAllByName(residentName);
 
             Integer count = list.size();
 
@@ -41,10 +41,10 @@ public class TriprecordController {
             map.put("count", count);
         } else {
             System.out.println("显示所有住户出行记录");
-            List<Triprecord> list = triprecordService.getTriprecordByPage((page - 1) * limit, limit);
-            List<Triprecord> triprecords = triprecordService.getTriprecordAll();
+            List<TripRecord> list = tripRecordService.getTripRecordByPage((page - 1) * limit, limit);
+            List<TripRecord> tripRecords = tripRecordService.getTripRecordAll();
 
-            Integer count = triprecords.size();
+            Integer count = tripRecords.size();
 
             map.put("code", 0);
             map.put("msg", "");
