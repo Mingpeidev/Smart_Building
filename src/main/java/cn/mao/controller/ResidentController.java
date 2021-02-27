@@ -1,6 +1,6 @@
 package cn.mao.controller;
 
-import cn.mao.Sensorandrfid.Rxtx_Rfid;
+import cn.mao.sensor.Rxtx_Rfid;
 import cn.mao.pojo.Resident;
 import cn.mao.service.ResidentService;
 import org.springframework.beans.factory.annotation.Autowired;

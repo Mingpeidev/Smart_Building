@@ -24,7 +24,7 @@
 
     <!-- 配置DispatcherServlet -->
     <servlet>
-        <servlet-name>SmartBuilding</servlet-name>
+        <servlet-name>DispatcherServlet</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <!-- 配置springMVC需要加载的配置文件
             spring-dao.xml,spring-service.xml,spring-web.xml
@@ -37,22 +37,21 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>SmartBuilding</servlet-name>
+        <servlet-name>DispatcherServlet</servlet-name>
         <!-- 默认匹配所有的请求 -->
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
 
     <filter>
-        <filter-name>Socketserver</filter-name>
-        <filter-class>cn.mao.Sensorandrfid.Socketserver</filter-class>
+        <filter-name>SocketServerFilter</filter-name>
+        <filter-class>cn.mao.sensor.SocketServerFilter</filter-class>
     </filter>
 
     <!--映射过滤器 -->
-    <!-- <filter-mapping>
-        <filter-name>Socketserver</filter-name>
-        “/*”表示拦截所有的请求
+    <filter-mapping>
+        <filter-name>SocketServerFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping> -->
+    </filter-mapping>
 
 </web-app>

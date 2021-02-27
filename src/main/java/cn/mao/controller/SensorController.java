@@ -1,6 +1,6 @@
 package cn.mao.controller;
 
-import cn.mao.Sensorandrfid.Rxtx_sensor;
+import cn.mao.sensor.Rxtx_sensor;
 import cn.mao.pojo.Sensor;
 import cn.mao.service.SensorService;
 import cn.mao.util.CharFormatUtil;

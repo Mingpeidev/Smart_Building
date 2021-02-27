@@ -1,7 +1,7 @@
 package cn.mao.controller;
 
-import cn.mao.Sensorandrfid.Rxtx_Rfid;
-import cn.mao.Sensorandrfid.Rxtx_sensor;
+import cn.mao.sensor.Rxtx_Rfid;
+import cn.mao.sensor.Rxtx_sensor;
 import cn.mao.pojo.User;
 import cn.mao.service.UserService;
 import cn.mao.util.SsmResult;
