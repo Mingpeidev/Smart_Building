@@ -79,4 +79,18 @@ public class ScheduleUtil {
         return false;
     }
 
+    public static void main(String[] args) {
+        ScheduleUtil.SRunnable sRunnable = new ScheduleUtil.SRunnable() {
+            @Override
+            public String getName() {
+                return "name1";
+            }
+
+            @Override
+            public void run() {
+                System.out.println(3333);
+            }
+        };
+        ScheduleUtil.stard(sRunnable, 1000, 1000, TimeUnit.MILLISECONDS);
+    }
 }
